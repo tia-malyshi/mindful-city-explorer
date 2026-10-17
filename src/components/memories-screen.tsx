@@ -1,0 +1,27 @@
+import { useState } from "react";
+import { ChevronLeft, Shuffle, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/language";
+import { usePersonalData, type ReflectionRow } from "@/lib/personal-data";
+
+export function ReflectionSource({ reflection }: { reflection: ReflectionRow }) {
+  const { t, language } = useLanguage(); const { data } = usePersonalData();
+  const answers = reflection.answers && typeof reflection.answers === "object" && !Array.isArray(reflection.answers) ? reflection.answers : {};
+  const media = data.media.filter(item => item.reflection_id === reflection.id);
+  return <section className="space-y-3 border-t py-4"><h3 className="text-sm font-semibold">{t(reflection.event_title)}</h3><p className="text-xs text-muted-foreground">{new Date(reflection.created_at).toLocaleDateString(language)} · {reflection.district} · {reflection.rating}/5</p><dl className="space-y-3">{Object.entries(answers).filter(([, value]) => typeof value === "string" && value.trim()).map(([question, value]) => <div key={question}><dt className="text-xs text-muted-foreground">{t(question)}</dt><dd className="mt-1 whitespace-pre-wrap text-sm">{String(value)}</dd></div>)}</dl><div className="grid grid-cols-3 gap-2">{media.filter(item => item.kind === "photo").map(item => <img key={item.id} src={item.url} alt={t("Your photos")} className="aspect-square w-full rounded-lg object-cover" />)}</div>{media.filter(item => item.kind === "voice").map(item => <div key={item.id}><p className="mb-1 text-xs text-muted-foreground">{t(item.question ?? "Voice answer")}</p><audio controls src={item.url} className="w-full" /></div>)}</section>;
+}
+export function MemoriesScreen() {
+  const { t, language } = useLanguage(); const personal = usePersonalData();
+  const [selected, setSelected] = useState<string | null>(null); const [busy, setBusy] = useState(false); const [error, setError] = useState("");
+  const memory = personal.data.memories.find(item => item.id === selected);
+  const run = async (action: () => Promise<void>) => { setBusy(true); setError(""); try { await action(); } catch (err) { setError((err as Error).message ?? String(err)); } finally { setBusy(false); } };
+  if (memory) {
+    const photos = memory.photo_ids.map(id => personal.data.media.find(item => item.id === id)).filter(item => !!item);
+    const reflections = personal.data.reflections.filter(item => photos.some(photo => photo.reflection_id === item.id));
+    return <div className="space-y-4"><div className="flex items-center justify-between"><Button size="icon" variant="ghost" aria-label={t("Back to memories")} onClick={() => setSelected(null)}><ChevronLeft /></Button><span className="text-sm">{new Date(memory.created_at).toLocaleDateString(language)}</span><Button size="icon" variant="ghost" aria-label={t("Delete memory")} disabled={busy} onClick={() => { if (window.confirm(t("Delete this memory? Your original photos stay."))) void run(async () => { await personal.deleteMemory(memory.id); setSelected(null); }); }}><Trash2 className="size-4" /></Button></div><div className="grid gap-2">{photos.map(photo => <img key={photo.id} src={photo.url} alt={t("Photo memory")} className="aspect-[4/3] w-full rounded-lg object-cover" />)}</div><h3 className="font-display text-xl font-semibold">{t("Original information")}</h3>{reflections.map(item => <ReflectionSource key={item.id} reflection={item} />)}{photos.filter(photo => !photo.reflection_id).map(photo => <p key={photo.id} className="text-sm text-muted-foreground">{t(photo.origin === "quest" ? "Quest photo" : "Reflection photo")} · {new Date(photo.created_at).toLocaleDateString(language)}</p>)}{error && <p role="alert" className="text-sm text-destructive">{t(error)}</p>}</div>;
+  }
+  return <div className="space-y-5"><Button variant="outline" className="w-full" disabled={busy || !personal.data.media.some(item => item.kind === "photo")} onClick={() => run(() => personal.makeMemory())}><Shuffle className="size-4" />{t(busy ? "Saving…" : "Surprise me with a memory")}</Button>{error && <p role="alert" className="text-sm text-destructive">{t(error)}</p>}{!personal.data.memories.length && <p className="text-sm text-muted-foreground">{t("Your memories will appear here")}</p>}<div className="grid grid-cols-2 gap-3">{personal.data.memories.map(item => {
+    const photo = personal.data.media.find(photo => item.photo_ids.includes(photo.id));
+    return <Button key={item.id} variant="ghost" onClick={() => setSelected(item.id)} className="h-auto min-w-0 flex-col items-start gap-2 p-0 text-left">{photo && <img src={photo.url} alt={t("Photo memory")} className="aspect-[3/4] w-full rounded-lg object-cover" />}<span className="text-xs">{new Date(item.created_at).toLocaleDateString(language)} · {item.photo_ids.length} {t("photos")}</span></Button>;
+  })}</div><h3 className="font-display text-xl font-semibold">{t("Saved experiences")}</h3>{personal.data.reflections.length ? personal.data.reflections.map(item => <details key={item.id} className="border-b py-3"><summary className="cursor-pointer text-sm font-semibold">{t(item.event_title)} · {item.rating}/5</summary><ReflectionSource reflection={item} /></details>) : <p className="text-sm text-muted-foreground">{t("No saved experiences yet")}</p>}</div>;
+}
