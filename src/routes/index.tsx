@@ -140,20 +140,11 @@ function Onboarding({ done }: { done: () => void }) {
           <div className="space-y-3">
             <p className="text-lg text-foreground/90">Zwolnij i</p>
             <h2 className="font-display text-5xl font-black leading-[0.95]">odkryj swoją Warszawę</h2>
-            <p className="text-sm leading-relaxed text-foreground/80">
-              Twój spokojny towarzysz uważnych chwil w mieście — ciche parki, kameralne spotkania, nowe miejsca i ludzie. Krok po kroku, w Twoim tempie.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2 text-xs">
-            {["🌿 Zauważaj więcej", "🤝 Znajdź swoich ludzi", "💛 Poczuj się lepiej"].map((t) => (
-              <span key={t} className="rounded-full bg-card/70 px-3 py-1.5 backdrop-blur">{t}</span>
-            ))}
           </div>
           <button onClick={() => setStep(0)} className="flex w-full items-center gap-3 rounded-full bg-card/80 p-2 backdrop-blur">
             <span className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground"><ChevronsRight className="size-5" /></span>
             <span className="flex-1 text-center font-bold">Poznajmy się</span>
           </button>
-          <p className="text-center text-xs text-muted-foreground">11 krótkich pytań · około 2 minut</p>
         </div>
       </div>
     );
