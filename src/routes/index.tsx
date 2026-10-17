@@ -1,10 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/lib/language";
 import { LanguageChoice } from "@/components/language-choice";
 import { LanguageSettings } from "@/components/language-settings";
 import { ProfileMenu, type ProfileAnswer } from "@/components/profile-menu";
 import { WeekTimeline } from "@/components/week-timeline";
+import { usePersonalData } from "@/lib/personal-data";
+import { AccountPanel } from "@/components/account-panel";
+import { ReflectionScreen } from "@/components/reflection-screen";
+import { PersonalInsights } from "@/components/personal-insights";
+import { ReflectionSource } from "@/components/memories-screen";
+import { PhotoUpload } from "@/components/photo-upload";
 import {
   UserRound, Settings, Home, Map as MapIcon, CalendarDays, Sparkles, Smile, Check, X, Camera, Mic, MessageCircle,
   MapPin, Clock, ThumbsUp, ThumbsDown, Play, Plus, Minus, Search, SlidersHorizontal, ChevronLeft,
@@ -56,13 +62,25 @@ const applyFilters = (f: Filters, q = "", t: (text: string) => string = (text) =
 
 function Index() {
   const { t: tx } = useLanguage();
+  const personal = usePersonalData();
   const [tab, setTab] = useState<Tab>("onboard");
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [planned, setPlanned] = useState<number[]>([1, 3]);
   const [answers, setAnswers] = useState<ProfileAnswer[]>([]);
   const [name, setName] = useState("");
+  const [reflectionEvent, setReflectionEvent] = useState(1);
+  useEffect(() => {
+    if (!personal.user) { setName(""); setAnswers([]); return; }
+    const profile = personal.data.profile;
+    if (!profile) return;
+    if (profile.display_name) setName(profile.display_name);
+    if (Array.isArray(profile.answers) && profile.answers.length) setAnswers(profile.answers.flatMap(answer => {
+      if (!answer || typeof answer !== "object" || Array.isArray(answer) || typeof answer['question'] !== "string" || !Array.isArray(answer['values'])) return [];
+      return [{ question: answer['question'], values: answer['values'].filter((value): value is string => typeof value === "string") }];
+    }));
+  }, [personal.user?.id, personal.data.profile]);
   const toggle = (id: number) => setPlanned((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
-  const ctx = { filters, setFilters, planned, toggle, setTab, answers, setAnswers, name, setName };
+  const ctx = { filters, setFilters, planned, toggle, setTab, answers, setAnswers, name, setName, reflectionEvent, setReflectionEvent };
 
   const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "Daily suggestion"], ["all", "Event list"], ["map", "Map"], ["calendar", "2 · Calendar"], ["mymap", "My interests"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["insights", "Insights"], ["journal", "Monthly story"]];
 
@@ -86,10 +104,11 @@ function Index() {
   );
 }
 
-type Ctx = { filters: Filters; setFilters: (f: Filters) => void; planned: number[]; toggle: (id: number) => void; setTab: (t: Tab) => void; answers: ProfileAnswer[]; setAnswers: (answers: ProfileAnswer[]) => void; name: string; setName: (name: string) => void };
+type Ctx = { filters: Filters; setFilters: (f: Filters) => void; planned: number[]; toggle: (id: number) => void; setTab: (t: Tab) => void; answers: ProfileAnswer[]; setAnswers: (answers: ProfileAnswer[]) => void; name: string; setName: (name: string) => void; reflectionEvent: number; setReflectionEvent: (id: number) => void };
 
 function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
   const { t: tx, language } = useLanguage();
+  const personal = usePersonalData();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const full = tab === "onboard";
@@ -98,7 +117,7 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
       <div className="relative h-[780px] overflow-hidden rounded-[2.6rem]">
         {!full && <Button variant="ghost" size="icon" title={language === "pl" ? "Ustawienia" : language === "ru" ? "Настройки" : "Settings"} aria-label={language === "pl" ? "Ustawienia" : language === "ru" ? "Настройки" : "Settings"} onClick={() => setSettingsOpen(true)} className="absolute right-5 top-6 z-10 rounded-full bg-card"><Settings className="size-4" /></Button>}
         {!full && <Button variant="ghost" size="icon" title={tx("Profile")} aria-label={tx("Profile")} onClick={() => setProfileOpen(true)} className="absolute right-16 top-6 z-10 rounded-full bg-card"><UserRound className="size-4" /></Button>}
-        {profileOpen && <ProfileMenu close={() => setProfileOpen(false)} settings={() => { setProfileOpen(false); setSettingsOpen(true); }} quest={() => { setProfileOpen(false); ctx.setTab("quest"); }} answers={ctx.answers} name={ctx.name} setName={ctx.setName} />}
+        {profileOpen && <ProfileMenu close={() => setProfileOpen(false)} settings={() => { setProfileOpen(false); setSettingsOpen(true); }} quest={() => { setProfileOpen(false); ctx.setTab("quest"); }} interests={() => { setProfileOpen(false); ctx.setTab("mymap"); }} account={<AccountPanel />} {...(personal.user ? { save: () => personal.saveProfile(ctx.name, ctx.answers) } : {})} answers={ctx.answers} name={ctx.name} setName={ctx.setName} />}
         {settingsOpen && <LanguageSettings close={() => setSettingsOpen(false)} />}
         {!full && <div className="flex justify-between px-7 pt-3 text-xs font-bold"><span>{tx("9:41")}</span><span>{tx("5G ▮▮▮")}</span></div>}
         <div className={`no-scrollbar h-full overflow-y-auto ${full ? "" : "px-5 pb-28 pt-12"}`}>
@@ -107,19 +126,20 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
           {tab === "all" && <AllEvents ctx={ctx} />}
           {tab === "map" && <WarsawMap ctx={ctx} />}
           {tab === "calendar" && <CalendarScreen ctx={ctx} />}
-          {tab === "quest" && <Quest />}
-          {tab === "feedback" && <Feedback />}
+          {tab === "quest" && <Quest reflect={(id) => { ctx.setReflectionEvent(id); ctx.setTab("feedback"); }} />}
+          {tab === "feedback" && <ReflectionScreen key="reflection" events={events} eventId={ctx.reflectionEvent} setEventId={ctx.setReflectionEvent} />}
           {tab === "mymap" && <MyMap />}
-          {tab === "journal" && <Journal />}
+          {tab === "journal" && <ReflectionScreen key="memories" events={events} eventId={ctx.reflectionEvent} setEventId={ctx.setReflectionEvent} initialMemories />}
           {tab === "insights" && <Insights />}
         </div>
         {!full && (
           <div className="absolute inset-x-4 bottom-5 flex justify-between rounded-full border bg-card/90 p-1.5 backdrop-blur">
-            {([["feed", Home, "Home"], ["calendar", CalendarDays, "Calendar"], ["mymap", Sparkles, "My interests"], ["insights", Lightbulb, "Insights"]] as const).map(([t, I, label]) => {
-              const on = tab === t || (t === "feed" && (tab === "all" || tab === "map"));
+            {([["feed", Home, "Home"], ["calendar", CalendarDays, "Calendar"], ["feedback", Smile, "Reflection"], ["insights", Lightbulb, "Insights"]] as const).map(([t, I, label]) => {
+              const on = tab === t || (t === "feed" && (tab === "all" || tab === "map")) || (t === "feedback" && tab === "journal");
               return (
-                <Button key={t} variant="ghost" aria-label={tx(label)} title={tx(label)} aria-current={on ? "page" : undefined} onClick={() => ctx.setTab(t)} className={`flex h-12 flex-1 items-center justify-center rounded-full transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
+                <Button key={t} variant="ghost" aria-label={tx(label)} title={tx(label)} aria-current={on ? "page" : undefined} onClick={() => ctx.setTab(t)} className={`flex h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-full px-1 transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
                   <I className="size-5" />
+                  <span className="text-[9px] leading-tight">{tx(label)}</span>
                 </Button>
               );
             })}
@@ -132,6 +152,9 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
 
 function Onboarding({ done }: { done: (answers: ProfileAnswer[]) => void }) {
   const { t: tx, language } = useLanguage();
+  const personal = usePersonalData();
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [step, setStep] = useState(-1);
   const [picked, setPicked] = useState<string[]>([]);
   const [answers, setAnswers] = useState<ProfileAnswer[]>([]);
@@ -148,6 +171,13 @@ function Onboarding({ done }: { done: (answers: ProfileAnswer[]) => void }) {
     { q: "How far are you up for?", hint: "By foot, bike or public transport.", opts: ["My neighbourhood", "Up to 30 min", "All of Warsaw"] },
     { q: "Anything we should know?", hint: "Optional — helps pick fitting places.", opts: ["Step-free access", "Quiet places", "Polish not needed", "No alcohol", "None"] },
   ];
+  if (step === steps.length) return <div className="no-scrollbar flex h-full flex-col gap-6 overflow-y-auto px-6 pb-10 pt-16">
+    <h2 className="font-display text-3xl font-semibold">{tx("Your Warsaw is waiting")}</h2>
+    {accountOpen ? <AccountPanel initialMode="signup" profileAnswers={answers} /> : !personal.user && <Button className="h-14 w-full rounded-full" onClick={() => setAccountOpen(true)}><UserRound className="size-5" />{tx("Create account")}</Button>}
+    <Button variant={personal.user ? "default" : "outline"} className="h-12 w-full rounded-full" onClick={async () => { try { if (personal.user) await personal.saveProfile(personal.data.profile?.display_name ?? "", answers); done(answers); } catch (error) { setSaveError((error as Error).message); } }}>{tx(personal.user ? "Show my ideas" : "Continue without an account")}</Button>
+    {saveError && <p role="alert" className="text-sm text-destructive">{tx(saveError)}</p>}
+    <Button variant="ghost" onClick={() => { setStep(steps.length - 1); setPicked(answers.at(-1)?.values ?? []); }}>{tx("‹ Back")}</Button>
+  </div>;
   if (step === -2) return <LanguageChoice next={() => setStep(0)} back={() => setStep(-1)} />;
   if (step === -1)
     return (
@@ -179,8 +209,8 @@ function Onboarding({ done }: { done: (answers: ProfileAnswer[]) => void }) {
       <div className="-mx-1 no-scrollbar flex flex-1 flex-wrap content-start gap-2 overflow-y-auto px-1 pb-4">
         {s.opts.map((o) => <button key={o} onClick={() => tog(o)} className={`rounded-full border px-4 py-2.5 text-sm font-medium ${picked.includes(o) ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`}>{tx(o)}</button>)}
       </div>
-      <button onClick={() => { const updated = [...answers]; updated[step] = { question: s.q, values: picked }; setAnswers(updated); if (step < steps.length - 1) { setStep(step + 1); setPicked(updated[step + 1]?.values ?? []); } else done(updated); }} className="mt-4 rounded-full bg-primary py-4 font-bold text-primary-foreground">
-        {step < steps.length - 1 ? tx("Continue") : tx("Show my ideas")}
+      <button onClick={() => { const updated = [...answers]; updated[step] = { question: s.q, values: picked }; setAnswers(updated); setStep(step + 1); setPicked(updated[step + 1]?.values ?? []); }} className="mt-4 rounded-full bg-primary py-4 font-bold text-primary-foreground">
+        {tx("Continue")}
       </button>
     </div>
   );
@@ -424,8 +454,9 @@ function CalendarScreen({ ctx }: { ctx: Ctx }) {
 
 const tasks = [{ id: "photo", label: "Take 3 pictures", icon: Camera }, { id: "voice", label: "Reflect in a voice note", icon: Mic }, { id: "talk", label: "Talk to a stranger", icon: MessageCircle }];
 
-function Quest() {
+function Quest({ reflect }: { reflect: (id: number) => void }) {
   const { t: tx, language } = useLanguage();
+  const personal = usePersonalData();
   const [idx, setIdx] = useState(0);
   const [accepted, setAccepted] = useState(false);
   const [chosen, setChosen] = useState<string[]>(["photo"]);
@@ -447,6 +478,8 @@ function Quest() {
             );
           })}
         </div>
+        {personal.user ? <><PhotoUpload eventId={e.id} origin="quest" /><div className="grid grid-cols-3 gap-2">{personal.data.media.filter(item => item.event_id === e.id && item.origin === "quest" && item.kind === "photo").map(item => <img key={item.id} src={item.url} alt={tx("Quest photo")} className="aspect-square w-full rounded-lg object-cover" />)}</div></> : <AccountPanel />}
+        <Button className="h-12 w-full" onClick={() => reflect(e.id)}><Smile className="size-4" />{tx("Reflect on this experience")}</Button>
         <div className="rounded-3xl bg-card p-4">
           <p className="mb-3 text-sm font-bold">{tx("After: how was it?")}</p>
           <div className="flex gap-2">
@@ -582,7 +615,7 @@ function Hints() {
     ["Bring a buddy", "Invite a friend or join others on the same quest — community forms here."],
     ["80 / 20 mix", "80% matches, 20% wildcards so the profile doesn't trap people in a bubble."],
     ["Weather-aware", "Swap outdoor ideas for indoor ones when it rains."],
-    ["Privacy & care", "Photos/voice on-device by default; link 116 123 support line in settings."],
+    ["Privacy & care", "Photos and voice notes are private to your account."],
   ];
   return (
     <section className="space-y-3 lg:pt-6">
@@ -601,6 +634,8 @@ const weeks = [
 
 function Insights() {
   const { t: tx, language } = useLanguage();
+  const personal = usePersonalData();
+  const [sources, setSources] = useState(false);
   const [w, setW] = useState(0);
   const wk = weeks[w];
   if (!wk) return null;
@@ -608,6 +643,7 @@ function Insights() {
   return (
     <div className="space-y-4 pt-2">
       <h2 className="font-display text-4xl font-black">{tx("Insights")}</h2>
+      <span className="text-xs text-muted-foreground">{tx("Example weekly review")}</span>
       <p className="pt-4 text-xs uppercase tracking-wider text-muted-foreground">{tx("Weekly review")}</p>
       <p className="text-sm text-muted-foreground">{tx("Your weekly review: where you went and what to try next, built from your visits, ratings and notes.")}</p>
       <div className="flex gap-2 rounded-2xl border border-primary/30 bg-primary/10 p-3 text-xs">
@@ -622,7 +658,8 @@ function Insights() {
       <div className="grid grid-cols-4 gap-2 text-center">
         {wk.stats.map(([a, b]) => <div key={b} className="rounded-2xl bg-card p-2.5"><b className="block font-display text-xl">{tx(a)}</b><span className="break-words text-[9px] uppercase text-muted-foreground">{tx(b)}</span></div>)}
       </div>
-      <div className="flex items-center justify-between text-xs text-muted-foreground"><span>{tx("Built from ")}{wk.stats[0]?.[0]} {tx(" visits")}</span><button className="flex items-center gap-1 font-bold text-primary"><RefreshCw className="size-3" />{tx("Refresh")}</button></div>
+      <Button variant="ghost" className="h-auto w-full justify-between px-0 text-xs" aria-expanded={sources} onClick={() => setSources(!sources)}>{tx("See original information")}<ChevronRight className={`size-4 ${sources ? "rotate-90" : ""}`} /></Button>
+      {sources && <div className="space-y-3 border-y py-4"><p className="text-xs text-muted-foreground">{tx("This overview uses example data. Your saved reflections are below.")}</p>{personal.data.reflections.map(item => <ReflectionSource key={item.id} reflection={item} />)}{!personal.data.reflections.length && <p className="text-sm text-muted-foreground">{tx("No saved experiences yet")}</p>}</div>}
       <div className="space-y-3 rounded-3xl bg-card p-4">
         <div className="flex items-center gap-2"><span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground"><MapPin className="size-4" /></span><h3 className="font-display text-lg font-black">{tx("Where you went")}</h3></div>
         {wk.d.map(([n, c]) => (

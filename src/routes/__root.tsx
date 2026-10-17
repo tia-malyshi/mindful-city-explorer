@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import { LanguageProvider, useLanguage } from "@/lib/language";
+import { PersonalProvider } from "@/lib/personal-data";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -114,7 +115,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Shared language preference survives navigation between screens. */}
-      <LanguageProvider><Outlet /></LanguageProvider>
+      <LanguageProvider><PersonalProvider><Outlet /></PersonalProvider></LanguageProvider>
     </QueryClientProvider>
   );
 }
