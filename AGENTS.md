@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Use a bundled Warsaw logo for the welcome screen and derive the public favicon from the same asset to keep app identity consistent.
