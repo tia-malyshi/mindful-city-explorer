@@ -35,7 +35,7 @@ export function InterestMindMap({ groups, active, setActive, unexplored, sourceI
       {groups.map((group, index) => {
         if (!unexplored && !group.weight) return null;
         const Icon = icons[index] ?? Lightbulb;
-        return <Button key={group.name} variant="ghost" aria-pressed={active === group.name} onClick={() => setActive(active === group.name ? null : group.name)} className={`absolute ${positions[index]} flex size-[88px] flex-col gap-1 rounded-full border-2 p-2 ${colors[group.tone]} ${group.weight ? "" : "border-dashed"} ${active && active !== group.name ? "opacity-40" : ""} ${active === group.name ? "ring-2 ring-ring ring-offset-2 ring-offset-background" : ""}`}><Icon className="size-5 shrink-0" /><span className="w-full whitespace-normal text-center text-[11px] font-semibold leading-tight">{t(group.name)}</span><span className="text-[10px]">{group.selected.length} / {group.events.length}</span></Button>;
+        return <Button key={group.name} variant="ghost" aria-pressed={active === group.name} onClick={() => setActive(active === group.name ? null : group.name)} className={`absolute ${positions[index]} flex size-[88px] flex-col gap-1 rounded-full border-2 p-2 ${colors[group.tone]} ${group.weight ? "" : "border-dashed"} ${active === group.name ? "ring-2 ring-ring ring-offset-2 ring-offset-background" : ""}`}><Icon className="size-5 shrink-0" /><span className="w-full whitespace-normal text-center text-[11px] font-semibold leading-tight">{t(group.name)}</span><span className="text-[10px]">{group.selected.length} / {group.events.length}</span></Button>;
       })}
     </div>
     {selected && <div className="pb-2">
