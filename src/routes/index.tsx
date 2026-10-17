@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   Home, Map as MapIcon, BookImage, User, Check, X, Camera, Mic, MessageCircle,
-  MapPin, Clock, ThumbsUp, ThumbsDown, Sparkles, Users, Baby, Trees, Waves, Dumbbell, Music, ChevronRight,
+  MapPin, Clock, ThumbsUp, ThumbsDown, Sparkles, Users, Baby, Trees, Waves, Dumbbell, Music, ChevronRight, CalendarDays, Smile, Play, Plus, Minus,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Tab = "onboard" | "home" | "map" | "journal" | "profile";
+type Tab = "onboard" | "feed" | "calendar" | "home" | "feedback" | "mymap" | "map" | "journal" | "profile";
 
 const ideas = [
   { id: 1, title: "Sunset walk in Pole Mokotowskie", district: "Mokotów", time: "Today 18:30", km: 1.2, icon: Trees, tag: "Nature", x: 45, y: 62, audience: "All ages" },
@@ -44,10 +44,10 @@ function Index() {
           <h1 className="font-display text-6xl leading-none">Kompas</h1>
           <p className="text-muted-foreground">A gentle nudge out of the house. Small city adventures, tiny challenges, and a monthly story that shows how rich your life is.</p>
           <nav className="flex flex-wrap gap-2">
-            {(["onboard", "home", "map", "journal", "profile"] as Tab[]).map((t) => (
+            {(["onboard", "feed", "calendar", "home", "feedback", "mymap", "map", "journal", "profile"] as Tab[]).map((t) => (
               <button key={t} onClick={() => setTab(t)}
                 className={`rounded-full border px-4 py-1.5 text-sm capitalize transition ${tab === t ? "bg-ink text-ink-foreground" : "bg-card hover:bg-muted"}`}>
-                {t === "onboard" ? "Onboarding" : t}
+                {({onboard:"Onboarding",feed:"1 Warszawa",calendar:"2 Calendar",home:"3-4 Quest",feedback:"5 Feedback",mymap:"6 My map"} as Record<string,string>)[t] ?? t}
               </button>
             ))}
           </nav>
@@ -68,7 +68,11 @@ function Phone({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
       <div className="relative h-[760px] overflow-hidden rounded-[2.5rem]">
         <div className="flex justify-between px-7 pt-3 text-xs font-medium"><span>9:41</span><span>●●● 5G</span></div>
         <div className="no-scrollbar h-[calc(100%-100px)] overflow-y-auto px-5 pb-6 pt-4">
-          {tab === "onboard" && <Onboarding done={() => setTab("home")} />}
+          {tab === "onboard" && <Onboarding done={() => setTab("feed")} />}
+          {tab === "feed" && <Feed />}
+          {tab === "calendar" && <Calendar />}
+          {tab === "feedback" && <Feedback />}
+          {tab === "mymap" && <MyMap />}
           {tab === "home" && <HomeScreen />}
           {tab === "map" && <MapScreen />}
           {tab === "journal" && <Journal />}
@@ -76,7 +80,7 @@ function Phone({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
         </div>
         {tab !== "onboard" && (
           <div className="absolute inset-x-0 bottom-0 flex justify-around border-t bg-card px-4 pb-6 pt-3">
-            {([["home", Home, "Today"], ["map", MapIcon, "Map"], ["journal", BookImage, "Journal"], ["profile", User, "Me"]] as const).map(([t, I, l]) => (
+            {([["feed", Home, "Warszawa"], ["calendar", CalendarDays, "Calendar"], ["home", Sparkles, "Quest"], ["feedback", Smile, "Feedback"], ["mymap", MapIcon, "My map"]] as const).map(([t, I, l]) => (
               <button key={t} onClick={() => setTab(t)} className={`flex flex-col items-center gap-1 text-[11px] ${tab === t ? "text-primary" : "text-muted-foreground"}`}>
                 <I className="size-5" />{l}
               </button>
@@ -315,5 +319,111 @@ function Hints() {
         </div>
       ))}
     </section>
+  );
+}
+
+const cats = ["All", "Nature", "Sport", "Culture", "Social", "Family"];
+const feedItems = [
+  { t: "Night at Copernicus Science Centre", c: "Culture", src: "Open Data", d: "Fri 19:00", g: "from-sky to-sage" },
+  { t: "Morning run club, Wisła boulevards", c: "Sport", src: "Facebook", d: "Sat 08:00", g: "from-sun to-primary" },
+  { t: "Ogród Saski picnic & book swap", c: "Social", src: "Facebook", d: "Sun 13:00", g: "from-sage to-sun" },
+  { t: "Free entry — Łazienki Palace", c: "Culture", src: "Open Data", d: "Thu all day", g: "from-primary to-sky" },
+];
+
+function Feed() {
+  const [cat, setCat] = useState("All");
+  const list = feedItems.filter((f) => cat === "All" || f.c === cat);
+  return (
+    <div className="space-y-4">
+      <h2 className="font-display text-4xl">Warszawa</h2>
+      <div className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 text-xs">
+        {cats.map((c) => <button key={c} onClick={() => setCat(c)} className={`shrink-0 rounded-full border px-3 py-1 ${cat === c ? "bg-ink text-ink-foreground" : "bg-card"}`}>{c}</button>)}
+      </div>
+      {list.map((f) => (
+        <div key={f.t} className="overflow-hidden rounded-3xl bg-card">
+          <div className={`h-28 bg-gradient-to-br ${f.g}`} />
+          <div className="flex items-end gap-3 p-4">
+            <div className="flex-1">
+              <p className="text-[10px] uppercase tracking-wider text-primary">{f.c} · via {f.src}</p>
+              <p className="font-medium">{f.t}</p>
+              <p className="text-xs text-muted-foreground">{f.d}</p>
+            </div>
+            <button className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground"><Plus className="size-4" /></button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Calendar() {
+  const [plan, setPlan] = useState<Record<number, boolean>>({ 2: true, 4: true });
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const items = ["Bench & tea, Pole Mokotowskie", "Pool open swim", "Jazz, Stare Miasto", "Library meetup", "Night at Copernicus", "Run club", "Picnic, Ogród Saski"];
+  return (
+    <div className="space-y-4">
+      <h2 className="font-display text-4xl">This week</h2>
+      <div className="grid grid-cols-7 gap-1 text-center text-[10px]">
+        {days.map((d, i) => <div key={d} className={`rounded-xl py-2 ${plan[i] ? "bg-primary text-primary-foreground" : "bg-card"}`}>{d}<div className="text-sm font-medium">{19 + i}</div></div>)}
+      </div>
+      {items.map((it, i) => (
+        <div key={it} className={`flex items-center gap-3 rounded-2xl p-3 ${plan[i] ? "bg-secondary" : "bg-card"}`}>
+          <span className="w-8 text-xs text-muted-foreground">{days[i]}</span>
+          <span className="flex-1 text-sm">{it}</span>
+          <button onClick={() => setPlan({ ...plan, [i]: !plan[i] })} className="flex size-8 items-center justify-center rounded-full border bg-card">
+            {plan[i] ? <Minus className="size-4" /> : <Plus className="size-4" />}
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Feedback() {
+  const [mood, setMood] = useState<number | null>(null);
+  const [rec, setRec] = useState(false);
+  const qs = ["What surprised you?", "Did you meet anyone?", "Would you go again?"];
+  return (
+    <div className="space-y-5">
+      <p className="text-sm text-muted-foreground">Jazz at Stare Miasto · just now</p>
+      <h2 className="font-display text-4xl">How was it?</h2>
+      <div className="flex justify-between">
+        {["😞", "😐", "🙂", "😄", "🤩"].map((e, i) => (
+          <button key={e} onClick={() => setMood(i)} className={`flex size-14 items-center justify-center rounded-full text-2xl ${mood === i ? "bg-accent ring-2 ring-primary" : "bg-card"}`}>{e}</button>
+        ))}
+      </div>
+      <div className="space-y-2">{qs.map((q) => <div key={q} className="rounded-2xl bg-card p-4 text-sm">{q}<div className="mt-2 h-px bg-border" /></div>)}</div>
+      <button onClick={() => setRec(!rec)} className={`flex w-full items-center justify-center gap-3 rounded-3xl py-6 ${rec ? "bg-primary text-primary-foreground" : "bg-ink text-ink-foreground"}`}>
+        {rec ? <Mic className="size-6 animate-pulse" /> : <Play className="size-6" />}
+        {rec ? "Recording… tap to stop" : "Answer with a voice note"}
+      </button>
+    </div>
+  );
+}
+
+function MyMap() {
+  const spots = [
+    { n: "Mokotów", x: 40, y: 65, r: 22, c: "bg-sage" },
+    { n: "Śródmieście", x: 50, y: 40, r: 18, c: "bg-primary" },
+    { n: "Praga", x: 75, y: 35, r: 12, c: "bg-sky" },
+    { n: "Wola", x: 25, y: 35, r: 9, c: "bg-sun" },
+    { n: "Żoliborz", x: 42, y: 15, r: 7, c: "bg-sage" },
+  ];
+  return (
+    <div className="space-y-4">
+      <h2 className="font-display text-4xl">My map</h2>
+      <p className="text-sm text-muted-foreground">Bigger bubble = more memories there. Tap to open photos.</p>
+      <div className="relative h-96 overflow-hidden rounded-3xl bg-card">
+        {spots.map((s) => (
+          <button key={s.n} style={{ left: `${s.x}%`, top: `${s.y}%`, width: `${s.r * 4}px`, height: `${s.r * 4}px` }}
+            className={`absolute flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-[10px] font-medium opacity-90 ${s.c}`}>{s.n}</button>
+        ))}
+      </div>
+      <div className="grid grid-cols-3 gap-2 text-center text-xs">
+        <div className="rounded-2xl bg-card p-3"><b className="block text-lg">12</b>activities</div>
+        <div className="rounded-2xl bg-card p-3"><b className="block text-lg">5</b>districts</div>
+        <div className="rounded-2xl bg-card p-3"><b className="block text-lg">31</b>photos</div>
+      </div>
+    </div>
   );
 }
