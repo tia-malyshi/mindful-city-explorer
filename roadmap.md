@@ -4,3 +4,6 @@
 - [x] Restore loading after the language update and verify a fresh visit.
 - [x] Choose language before opening the questions.
 - [x] Move later language changes into settings and verify the flow.
+- [x] Make Home daily suggestions, split interests and Insights, and keep four bottom tabs.
+- [x] Add profile access with questionnaire data, settings, and a working invitation share action.
+- [x] Verify updated navigation and profile flow.

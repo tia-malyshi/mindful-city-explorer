@@ -3,8 +3,9 @@ import { useState } from "react";
 import { useLanguage } from "@/lib/language";
 import { LanguageChoice } from "@/components/language-choice";
 import { LanguageSettings } from "@/components/language-settings";
+import { ProfileMenu, type ProfileAnswer } from "@/components/profile-menu";
 import {
-  Settings, Home, Map as MapIcon, CalendarDays, Sparkles, Smile, Check, X, Camera, Mic, MessageCircle,
+  UserRound, Settings, Home, Map as MapIcon, CalendarDays, Sparkles, Smile, Check, X, Camera, Mic, MessageCircle,
   MapPin, Clock, ThumbsUp, ThumbsDown, Play, Plus, Minus, Search, SlidersHorizontal, ChevronLeft,
   ChevronRight, ChevronsRight, List, Grid3x3, Trees, Music, Dumbbell, Users, Waves, Lightbulb, RefreshCw,
 } from "lucide-react";
@@ -57,10 +58,12 @@ function Index() {
   const [tab, setTab] = useState<Tab>("onboard");
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [planned, setPlanned] = useState<number[]>([1, 3]);
+  const [answers, setAnswers] = useState<ProfileAnswer[]>([]);
+  const [name, setName] = useState("");
   const toggle = (id: number) => setPlanned((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
-  const ctx = { filters, setFilters, planned, toggle, setTab };
+  const ctx = { filters, setFilters, planned, toggle, setTab, answers, setAnswers, name, setName };
 
-  const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "1 · Discover (swipe)"], ["all", "Event list"], ["map", "Map"], ["calendar", "2 · Calendar"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["insights", "6 · Insights + interests"], ["journal", "Monthly story"]];
+  const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "Daily suggestion"], ["all", "Event list"], ["map", "Map"], ["calendar", "2 · Calendar"], ["mymap", "My interests"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["insights", "Insights"], ["journal", "Monthly story"]];
 
   return (
     <main className="min-h-screen px-6 py-10 lg:py-14">
@@ -82,38 +85,41 @@ function Index() {
   );
 }
 
-type Ctx = { filters: Filters; setFilters: (f: Filters) => void; planned: number[]; toggle: (id: number) => void; setTab: (t: Tab) => void };
+type Ctx = { filters: Filters; setFilters: (f: Filters) => void; planned: number[]; toggle: (id: number) => void; setTab: (t: Tab) => void; answers: ProfileAnswer[]; setAnswers: (answers: ProfileAnswer[]) => void; name: string; setName: (name: string) => void };
 
 function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
   const { t: tx, language } = useLanguage();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const full = tab === "onboard";
   return (
     <div className="mx-auto w-[375px] rounded-[3.2rem] border-[10px] border-ink bg-background shadow-phone ring-1 ring-border">
       <div className="relative h-[780px] overflow-hidden rounded-[2.6rem]">
         {!full && <Button variant="ghost" size="icon" title={language === "pl" ? "Ustawienia" : language === "ru" ? "Настройки" : "Settings"} aria-label={language === "pl" ? "Ustawienia" : language === "ru" ? "Настройки" : "Settings"} onClick={() => setSettingsOpen(true)} className="absolute right-5 top-6 z-10 rounded-full bg-card"><Settings className="size-4" /></Button>}
+        {!full && <Button variant="ghost" size="icon" title={tx("Profile")} aria-label={tx("Profile")} onClick={() => setProfileOpen(true)} className="absolute right-16 top-6 z-10 rounded-full bg-card"><UserRound className="size-4" /></Button>}
+        {profileOpen && <ProfileMenu close={() => setProfileOpen(false)} settings={() => { setProfileOpen(false); setSettingsOpen(true); }} quest={() => { setProfileOpen(false); ctx.setTab("quest"); }} answers={ctx.answers} name={ctx.name} setName={ctx.setName} />}
         {settingsOpen && <LanguageSettings close={() => setSettingsOpen(false)} />}
         {!full && <div className="flex justify-between px-7 pt-3 text-xs font-bold"><span>{tx("9:41")}</span><span>{tx("5G ▮▮▮")}</span></div>}
         <div className={`no-scrollbar h-full overflow-y-auto ${full ? "" : "px-5 pb-28 pt-12"}`}>
-          {tab === "onboard" && <Onboarding done={() => ctx.setTab("feed")} />}
+          {tab === "onboard" && <Onboarding done={(answers) => { ctx.setAnswers(answers); ctx.setTab("feed"); }} />}
           {tab === "feed" && <Feed ctx={ctx} />}
           {tab === "all" && <AllEvents ctx={ctx} />}
           {tab === "map" && <WarsawMap ctx={ctx} />}
           {tab === "calendar" && <CalendarScreen ctx={ctx} />}
           {tab === "quest" && <Quest />}
           {tab === "feedback" && <Feedback />}
-          {tab === "mymap" && <Insights />}
+          {tab === "mymap" && <MyMap />}
           {tab === "journal" && <Journal />}
           {tab === "insights" && <Insights />}
         </div>
         {!full && (
           <div className="absolute inset-x-4 bottom-5 flex justify-between rounded-full border bg-card/90 p-1.5 backdrop-blur">
-            {([["feed", Home], ["calendar", CalendarDays], ["quest", Sparkles], ["insights", Lightbulb]] as const).map(([t, I]) => {
-              const on = tab === t || (t === "feed" && (tab === "all" || tab === "map")) || (t === "quest" && tab === "feedback") || (t === "insights" && tab === "mymap");
+            {([["feed", Home, "Home"], ["calendar", CalendarDays, "Calendar"], ["mymap", Sparkles, "My interests"], ["insights", Lightbulb, "Insights"]] as const).map(([t, I, label]) => {
+              const on = tab === t || (t === "feed" && (tab === "all" || tab === "map"));
               return (
-                <button key={t} onClick={() => ctx.setTab(t)} className={`flex h-12 flex-1 items-center justify-center rounded-full transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
+                <Button key={t} variant="ghost" aria-label={tx(label)} title={tx(label)} aria-current={on ? "page" : undefined} onClick={() => ctx.setTab(t)} className={`flex h-12 flex-1 items-center justify-center rounded-full transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
                   <I className="size-5" />
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -123,10 +129,11 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
   );
 }
 
-function Onboarding({ done }: { done: () => void }) {
+function Onboarding({ done }: { done: (answers: ProfileAnswer[]) => void }) {
   const { t: tx, language } = useLanguage();
   const [step, setStep] = useState(-1);
   const [picked, setPicked] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<ProfileAnswer[]>([]);
   const steps = [
     { q: "What interests you?", hint: "Choose as many as you like.", opts: ["Nature & walks", "Sports & fitness", "Art & museums", "Music & concerts", "Food & cafés", "Books & writing", "Board games", "Photography", "Dance", "Crafts & workshops", "Mindfulness", "Volunteering", "History & architecture", "Science & technology"] },
     { q: "What do you want more of?", hint: "Your goal for the next weeks.", opts: ["Calm", "Movement", "New people", "Culture", "Nature", "Confidence", "Routine", "Creativity"] },
@@ -163,7 +170,7 @@ function Onboarding({ done }: { done: () => void }) {
     <div className="flex h-full flex-col px-6 pb-10 pt-14">
       <div className="mb-6 flex gap-1">{steps.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} />)}</div>
       <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <button onClick={() => setStep(step - 1)}>{tx("‹ Back")}</button>
+        <button onClick={() => { setStep(step - 1); setPicked(answers[step - 1]?.values ?? []); }}>{tx("‹ Back")}</button>
         <span>{tx("Question ")}{step + 1} {tx(" / ")}{steps.length}</span>
       </div>
       <h2 className="mt-4 font-display text-4xl font-black leading-tight">{tx(s.q)}</h2>
@@ -171,7 +178,7 @@ function Onboarding({ done }: { done: () => void }) {
       <div className="-mx-1 no-scrollbar flex flex-1 flex-wrap content-start gap-2 overflow-y-auto px-1 pb-4">
         {s.opts.map((o) => <button key={o} onClick={() => tog(o)} className={`rounded-full border px-4 py-2.5 text-sm font-medium ${picked.includes(o) ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`}>{tx(o)}</button>)}
       </div>
-      <button onClick={() => (step < steps.length - 1 ? setStep(step + 1) : done())} className="mt-4 rounded-full bg-primary py-4 font-bold text-primary-foreground">
+      <button onClick={() => { const updated = [...answers]; updated[step] = { question: s.q, values: picked }; setAnswers(updated); if (step < steps.length - 1) { setStep(step + 1); setPicked(updated[step + 1]?.values ?? []); } else done(updated); }} className="mt-4 rounded-full bg-primary py-4 font-bold text-primary-foreground">
         {step < steps.length - 1 ? tx("Continue") : tx("Show my ideas")}
       </button>
     </div>
@@ -241,8 +248,7 @@ function Feed({ ctx }: { ctx: Ctx }) {
     <div className="flex h-full flex-col gap-4">
       <div className="flex items-end justify-between pt-2">
         <div>
-          <h2 className="font-display text-4xl font-black leading-none">{tx("Discover")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{tx("Explored: ")}{i}</p>
+          <h2 className="font-display text-2xl font-black leading-tight">{tx("Daily suggestion")}</h2>
         </div>
         <div className="flex gap-2">
           <button onClick={() => i > 0 && setI(i - 1)} aria-label={tx("Undo")} className="flex size-10 items-center justify-center rounded-full bg-muted"><RefreshCw className="size-4" /></button>
@@ -509,7 +515,7 @@ function MyMap() {
   const active = interests.find((i) => i.n === sel);
   return (
     <div className="space-y-5 pt-2">
-      <h2 className="font-display text-4xl font-black">{tx("Insights")}</h2>
+      <h2 className="font-display text-3xl font-black">{tx("My interests")}</h2>
       <p className="text-xs uppercase tracking-wider text-muted-foreground">{tx("Your interest map")}</p>
       <div className="relative mx-auto size-[300px]">
         <svg viewBox="0 0 300 300" className="size-full">
@@ -594,7 +600,7 @@ function Insights() {
   const max = Math.max(...wk.d.map(([, n]) => n));
   return (
     <div className="space-y-4 pt-2">
-      <MyMap />
+      <h2 className="font-display text-4xl font-black">{tx("Insights")}</h2>
       <p className="pt-4 text-xs uppercase tracking-wider text-muted-foreground">{tx("Weekly review")}</p>
       <p className="text-sm text-muted-foreground">{tx("Your weekly review: where you went and what to try next, built from your visits, ratings and notes.")}</p>
       <div className="flex gap-2 rounded-2xl border border-primary/30 bg-primary/10 p-3 text-xs">

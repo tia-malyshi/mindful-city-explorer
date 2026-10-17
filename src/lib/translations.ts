@@ -1,4 +1,18 @@
 export const translations: Record<string, { pl: string; ru: string }> = {
+  "Daily suggestion": { pl: "Pomysł na dziś", ru: "Идея на сегодня" },
+  "Home": { pl: "Dziś", ru: "Сегодня" },
+  "Profile": { pl: "Profil", ru: "Профиль" },
+  "My interests": { pl: "Moje zainteresowania", ru: "Мои интересы" },
+  "Account settings": { pl: "Ustawienia konta", ru: "Настройки аккаунта" },
+  "Invite a friend": { pl: "Zaproś znajomych", ru: "Пригласить друга" },
+  "Your profile data": { pl: "Twoje dane", ru: "Ваши данные" },
+  "Name": { pl: "Imię", ru: "Имя" },
+  "Not provided": { pl: "Nie podano", ru: "Не указано" },
+  "Close profile": { pl: "Zamknij profil", ru: "Закрыть профиль" },
+  "Invitation copied": { pl: "Zaproszenie skopiowane", ru: "Приглашение скопировано" },
+  "Copy invitation": { pl: "Kopiuj zaproszenie", ru: "Скопировать приглашение" },
+  "Explore Warsaw with me on MojaWawa": { pl: "Odkrywaj ze mną Warszawę w MojaWawa", ru: "Открывайте Варшаву со мной в MojaWawa" },
+  "Your answers": { pl: "Twoje odpowiedzi", ru: "Ваши ответы" },
   "Language": {
     "pl": "Język",
     "ru": "Язык"
