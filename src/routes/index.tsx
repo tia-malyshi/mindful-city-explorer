@@ -9,6 +9,7 @@ import park from "@/assets/park.jpg";
 import oldtown from "@/assets/oldtown.jpg";
 import pool from "@/assets/pool.jpg";
 import river from "@/assets/river.jpg";
+import warsawArt from "@/assets/warsaw-illustration.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -132,8 +133,7 @@ function Onboarding({ done }: { done: () => void }) {
   if (step < 0)
     return (
       <div className="relative h-full">
-        <img src={park} alt="Warsaw park at sunset" className="absolute inset-0 size-full object-cover" />
-        <div className="scrim absolute inset-0" />
+        <img src={warsawArt} alt="Illustration of Warsaw: Palace of Culture, Syrenka and the Vistula" width={768} height={1536} className="absolute inset-0 size-full object-cover object-top" />
         <div className="absolute inset-x-6 top-14">
           <p className="text-sm font-medium tracking-wide text-foreground/80">Cześć 👋</p>
         </div>
