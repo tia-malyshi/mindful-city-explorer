@@ -159,7 +159,7 @@ function Onboarding({ done }: { done: () => void }) {
       </div>
       <h2 className="mt-4 font-display text-4xl font-black leading-tight">{s.q}</h2>
       <p className="mb-6 mt-2 text-sm text-muted-foreground">{s.hint}</p>
-      <div className="-mx-1 flex flex-1 flex-wrap content-start gap-2 overflow-y-auto px-1 pb-4">
+      <div className="-mx-1 no-scrollbar flex flex-1 flex-wrap content-start gap-2 overflow-y-auto px-1 pb-4">
         {s.opts.map((o) => <button key={o} onClick={() => tog(o)} className={`rounded-full border px-4 py-2.5 text-sm font-medium ${picked.includes(o) ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`}>{o}</button>)}
       </div>
       <button onClick={() => (step < steps.length - 1 ? setStep(step + 1) : done())} className="mt-4 rounded-full bg-primary py-4 font-bold text-primary-foreground">
