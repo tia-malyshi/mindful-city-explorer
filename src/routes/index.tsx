@@ -133,15 +133,27 @@ function Onboarding({ done }: { done: () => void }) {
       <div className="relative h-full">
         <img src={park} alt="Warsaw park at sunset" className="absolute inset-0 size-full object-cover" />
         <div className="scrim absolute inset-0" />
-        <div className="absolute inset-x-6 bottom-10 space-y-6">
-          <div>
-            <p className="text-lg">Plan your</p>
-            <h2 className="font-display text-5xl font-black leading-[0.95]">Day in Warszawa</h2>
+        <div className="absolute inset-x-6 top-14">
+          <p className="text-sm font-medium tracking-wide text-foreground/80">Cześć 👋</p>
+        </div>
+        <div className="absolute inset-x-6 bottom-10 space-y-5">
+          <div className="space-y-3">
+            <p className="text-lg text-foreground/90">Slow down and</p>
+            <h2 className="font-display text-5xl font-black leading-[0.95]">Find your Warszawa</h2>
+            <p className="text-sm leading-relaxed text-foreground/80">
+              A gentle companion for mindful moments in the city — quiet parks, small gatherings, new places and people. One step at a time, at your own pace.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 text-xs">
+            {["🌿 Notice more", "🤝 Find your people", "💛 Feel better"].map((t) => (
+              <span key={t} className="rounded-full bg-card/70 px-3 py-1.5 backdrop-blur">{t}</span>
+            ))}
           </div>
           <button onClick={() => setStep(0)} className="flex w-full items-center gap-3 rounded-full bg-card/80 p-2 backdrop-blur">
             <span className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground"><ChevronsRight className="size-5" /></span>
-            <span className="flex-1 text-center font-bold">Start exploring</span>
+            <span className="flex-1 text-center font-bold">Let's get to know you</span>
           </button>
+          <p className="text-center text-xs text-muted-foreground">11 short questions · about 2 minutes</p>
         </div>
       </div>
     );
