@@ -118,7 +118,6 @@ function Onboarding({ done }: { done: () => void }) {
     { q: "What interests you?", hint: "Choose as many as you like.", multiple: true, opts: ["Nature & walks", "Sports & fitness", "Art & museums", "Music & concerts", "Food & cafés", "Books & writing", "Board games", "Photography", "Dance", "Crafts & workshops", "Mindfulness", "Volunteering", "History & architecture", "Science & technology"] },
     { q: "What are your goals?", hint: "Pick everything you’d like to try.", multiple: true, opts: ["Explore new activities", "Do quests", "Meet new people", "Discover hidden places", "Build confidence", "Be more active", "Relax & recharge", "Learn something new"] },
     { q: "Who's coming with you?", hint: "Choose all that fit your plans.", multiple: true, opts: ["Just me", "Partner", "Friends", "Kids — family events"] },
-    { q: "What age gap feels comfortable?", hint: "When meeting new people, which age difference would you prefer? Choose one, or skip.", multiple: false, opts: ["Within 5 years of my age", "Within 10 years of my age", "Any age gap", "Prefer not to say"] },
     { q: "How far are you up for?", hint: "Choose one travel preference.", multiple: false, opts: ["My neighbourhood", "Up to 30 min", "All of Warsaw"] },
   ];
   if (step < 0)
@@ -162,7 +161,6 @@ function Onboarding({ done }: { done: () => void }) {
         <button onClick={() => (step < steps.length - 1 ? setStep(step + 1) : done())} className="rounded-full bg-primary py-4 font-bold text-primary-foreground">
           {step < steps.length - 1 ? "Continue" : "Show my ideas"}
         </button>
-        {step === 3 && <button onClick={() => { setAnswers((previous) => ({ ...previous, [step]: [] })); setStep(step + 1); }} className="min-h-11 text-sm text-muted-foreground">Skip this question</button>}
       </div>
     </div>
   );
