@@ -2,5 +2,5 @@
 - [x] Rename the app MojaWawa, including page titles.
 - [x] Verify language switching and existing navigation.
 - [x] Restore loading after the language update and verify a fresh visit.
-- [ ] Choose language before opening the questions.
-- [ ] Move later language changes into settings and verify the flow.
+- [x] Choose language before opening the questions.
+- [x] Move later language changes into settings and verify the flow.
