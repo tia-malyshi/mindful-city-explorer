@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Keep the bundled Warsaw logo as the source for the public favicon; welcome photography uses a Lovable Assets pointer so uploaded media stays outside the source bundle.
+- Localize display text through the shared language context and translation catalog, keeping event IDs and filter keys stable; store only the interface-language preference in browser storage after hydration.
