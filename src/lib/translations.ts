@@ -1,4 +1,6 @@
 export const translations: Record<string, { pl: string; ru: string }> = {
+  "Decrease distance": { pl: "Zmniejsz odległość", ru: "Уменьшить расстояние" },
+  "Increase distance": { pl: "Zwiększ odległość", ru: "Увеличить расстояние" },
   "Week": { pl: "Tydzień", ru: "Неделя" },
   "Month": { pl: "Miesiąc", ru: "Месяц" },
   "Previous week": { pl: "Poprzedni tydzień", ru: "Предыдущая неделя" },

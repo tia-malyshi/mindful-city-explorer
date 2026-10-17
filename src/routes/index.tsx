@@ -200,7 +200,11 @@ function FilterSheet({ ctx, close }: { ctx: Ctx; close: () => void }) {
         <div><p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">{tx("For")}</p>
           <div className="flex gap-2">{["Any", "Adults", "Family"].map((a) => <button key={a} className={chip(f.aud === a)} onClick={() => setF({ ...f, aud: a })}>{tx(a)}</button>)}</div></div>
         <div><p className="mb-2 flex justify-between text-xs uppercase tracking-wider text-muted-foreground"><span>{tx("Distance")}</span><span className="text-foreground">{tx("up to ")}{f.maxKm} {tx(" km")}</span></p>
-          <input type="range" min={1} max={10} value={f.maxKm} onChange={(e) => setF({ ...f, maxKm: +e.target.value })} className="w-full accent-primary" /></div>
+          <div className="flex items-center justify-between rounded-lg border bg-background p-1">
+            <Button variant="ghost" size="icon" aria-label={tx("Decrease distance")} disabled={f.maxKm <= 1} onClick={() => setF({ ...f, maxKm: f.maxKm - 1 })}><Minus className="size-4" /></Button>
+            <span className="text-sm font-bold tabular-nums">{f.maxKm} {tx("km")}</span>
+            <Button variant="ghost" size="icon" aria-label={tx("Increase distance")} disabled={f.maxKm >= 10} onClick={() => setF({ ...f, maxKm: f.maxKm + 1 })}><Plus className="size-4" /></Button>
+          </div></div>
         <label className="flex items-center justify-between text-sm"><span>{tx("Free only")}</span><input type="checkbox" checked={f.free} onChange={(e) => setF({ ...f, free: e.target.checked })} className="size-5 accent-primary" /></label>
         <div className="flex gap-2">
           <button onClick={() => setF(defaultFilters)} className="flex-1 rounded-full border py-3 text-sm">{tx("Reset")}</button>
