@@ -136,6 +136,7 @@ function Onboarding({ done }: { done: () => void }) {
       <div className="flex h-full min-h-0 flex-col bg-welcome text-foreground">
         <div className="relative min-h-0 flex-1 overflow-hidden">
           <img src={warsawPhoto.url} alt="Pałac Kultury i Nauki widziany z warszawskiej ulicy" width={768} height={994} className="absolute inset-0 h-full w-full object-cover object-center" />
+          <div aria-hidden="true" className="welcome-photo-fade pointer-events-none absolute inset-x-0 bottom-0 h-48" />
         </div>
         <div className="shrink-0 px-7 pb-10 pt-7 text-center">
           <h2 className="font-display text-3xl font-semibold leading-snug">Zwolnij i odkryj<br />swoją Warszawę</h2>
