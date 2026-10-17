@@ -10,6 +10,10 @@
   --color-rose: var(--rose);
   --color-violet: var(--violet);
   --color-welcome: var(--welcome);
+  --color-map-surface: var(--map-surface);
+  --color-map-ink: var(--map-ink);
+  --color-map-center: var(--map-center);
+  --color-map-center-foreground: var(--map-center-foreground);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -44,6 +48,10 @@
 
 :root {
   --radius: 1.25rem;
+  --map-surface: oklch(0.99 0.003 150);
+  --map-ink: oklch(0.25 0.055 255);
+  --map-center: oklch(0.24 0.065 255);
+  --map-center-foreground: oklch(0.99 0 0);
   --welcome: oklch(0.29 0.045 155);
   --welcome-photo-fade: linear-gradient(to top, var(--welcome) 0%, oklch(0.29 0.045 155 / 0.8) 22%, oklch(0.29 0.045 155 / 0.3) 58%, oklch(0.29 0.045 155 / 0) 100%);
   --background: oklch(0.16 0.012 150);
