@@ -9,7 +9,7 @@ import park from "@/assets/park.jpg";
 import oldtown from "@/assets/oldtown.jpg";
 import pool from "@/assets/pool.jpg";
 import river from "@/assets/river.jpg";
-import warsawLogo from "@/assets/warsaw-logo.png";
+import warsawLogo from "@/assets/warsaw-logo-refined.png";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -135,7 +135,7 @@ function Onboarding({ done }: { done: () => void }) {
     return (
       <div className="flex h-full min-h-0 flex-col bg-welcome px-7 pb-10 pt-14 text-foreground">
         <div className="flex min-h-0 flex-1 items-center justify-center">
-          <img src={warsawLogo} alt="Logo Warszawy — Pałac Kultury i Wisła" width={1024} height={1024} className="size-52 object-contain" />
+          <img src={warsawLogo} alt="Logo Warszawy — Pałac Kultury" width={1024} height={1024} className="size-52 object-contain" />
         </div>
         <div className="shrink-0 pb-5 text-center">
           <h2 className="font-display text-3xl font-semibold leading-snug">Zwolnij i odkryj<br />swoją Warszawę</h2>
