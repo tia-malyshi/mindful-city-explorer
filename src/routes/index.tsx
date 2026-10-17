@@ -399,7 +399,7 @@ const interests = [
 function MyMap() {
   const [sel, setSel] = useState<string | null>(null);
   const total = interests.reduce((t, i) => t + i.v, 0);
-  const R = 120, C = 150, gap = 7; // degrees gap
+  const R = 120, C = 150, gap = 19;
   let ang = -90;
   const pt = (deg: number, r = R) => [C + r * Math.cos((deg * Math.PI) / 180), C + r * Math.sin((deg * Math.PI) / 180)] as const;
   const segs = interests.map((it) => {
