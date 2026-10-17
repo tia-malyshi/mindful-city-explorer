@@ -246,7 +246,21 @@ function Feed({ ctx }: { ctx: Ctx }) {
           <button onClick={() => ctx.setTab("map")} aria-label={tx("Map")} className="flex size-10 items-center justify-center rounded-full bg-muted"><MapIcon className="size-4" /></button>
         </div>
       </div>
-      {e.free ? tx("Free") : `${tx("from")} ${e.price} zł`}
+      {e ? (
+        <div className={`overflow-hidden rounded-3xl bg-card transition duration-300 ${tr}`}>
+          <div className="relative h-60">
+            <img src={e.img} alt={tx(e.t)} className="size-full object-cover" />
+            <span className="absolute right-3 top-3 rounded-full bg-card px-2.5 py-1 text-xs font-bold">{e.free ? tx("Free") : `${tx("from")} ${e.price} zł`}</span>
+          </div>
+          <div className="space-y-2 p-5">
+            <span className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold text-ink ${catColor[e.c]}`}>{tx(e.c)}</span>
+            <p className="font-display text-2xl font-extrabold leading-tight">{tx(e.t)}</p>
+            <p className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground"><span className="flex items-center gap-1"><Clock className="size-3" />{tx("Oct")} {e.day} · {tx(e.time)}</span><span className="flex items-center gap-1"><MapPin className="size-3" />{e.district}</span></p>
+            <button onClick={() => setWhy(!why)} className="text-xs font-bold text-primary">{tx("Why am I seeing this?")}</button>
+            {why && <p className="text-xs text-muted-foreground">{language === "pl" ? `Interesuje Cię ${tx(e.c).toLowerCase()} i spokojne aktywności. To ${e.km} km od Ciebie.` : language === "ru" ? `Вам интересны ${tx(e.c).toLowerCase()} и спокойные занятия. Это в ${e.km} км от вас.` : `You chose ${e.c.toLowerCase()} and calm activities, and it’s ${e.km} km from you.`}</p>}
+          </div>
+        </div>
+      ) : <p className="text-sm text-muted-foreground">{tx("No ideas match your filters.")}</p>}
       <div className="flex items-start justify-center gap-6">
         {([["l", X, "Skip", "border-rose text-rose", "size-16"], ["u", Sparkles, "Superlike", "border-sun text-sun", "size-14"], ["r", Check, "Interested", "border-primary bg-primary text-primary-foreground", "size-16"]] as const).map(([d, I, l, c, sz]) => (
           <button key={d} onClick={() => act(d)} className="flex flex-col items-center gap-1 text-xs">
@@ -310,7 +324,7 @@ function AllEvents({ ctx }: { ctx: Ctx }) {
   const { t: tx, language } = useLanguage();
   const [q, setQ] = useState("");
   const [sheet, setSheet] = useState(false);
-  const list = applyFilters(ctx.filters, q, t).sort((a, b) => a.day - b.day);
+  const list = applyFilters(ctx.filters, q, tx).sort((a, b) => a.day - b.day);
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3 pt-2">

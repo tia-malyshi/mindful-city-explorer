@@ -6,8 +6,8 @@ export type Language = (typeof languages)[number];
 export function resolveLanguage(value: unknown): Language {
   return value === "en" || value === "ru" ? value : "pl";
 }
-export function translate(language: Language, value: string | number): string {
-  const text = String(value);
+export function translate(language: Language, value: string | number | undefined): string {
+  const text = String(value ?? "");
   const key = text.trim();
   let result = language === "en" ? key : translations[key]?.[language] ?? key;
   if (language === "en") {
@@ -19,7 +19,7 @@ export function translate(language: Language, value: string | number): string {
   }
   return `${text.match(/^\s*/)?.[0] ?? ""}${result}${text.match(/\s*$/)?.[0] ?? ""}`;
 }
-const LanguageContext = createContext({ language: "pl" as Language, setLanguage: (_: Language) => {}, t: (text: string | number) => translate("pl", text) });
+const LanguageContext = createContext({ language: "pl" as Language, setLanguage: (_: Language) => {}, t: (text: string | number | undefined) => translate("pl", text) });
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>("pl");
   useEffect(() => {
