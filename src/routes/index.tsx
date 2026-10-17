@@ -116,9 +116,17 @@ function Onboarding({ done }: { done: () => void }) {
   const [step, setStep] = useState(-1);
   const [picked, setPicked] = useState<string[]>([]);
   const steps = [
-    { q: "What do you want more of?", opts: ["Calm", "Movement", "New people", "Culture", "Nature", "Confidence"] },
-    { q: "Who's coming with you?", opts: ["Just me", "Partner", "Friends", "Kids — family events"] },
-    { q: "How far are you up for?", opts: ["My neighbourhood", "Up to 30 min", "All of Warsaw"] },
+    { q: "What interests you?", hint: "Choose as many as you like.", opts: ["Nature & walks", "Sports & fitness", "Art & museums", "Music & concerts", "Food & cafés", "Books & writing", "Board games", "Photography", "Dance", "Crafts & workshops", "Mindfulness", "Volunteering", "History & architecture", "Science & technology"] },
+    { q: "What do you want more of?", hint: "Your goal for the next weeks.", opts: ["Calm", "Movement", "New people", "Culture", "Nature", "Confidence", "Routine", "Creativity"] },
+    { q: "How are you feeling lately?", hint: "Only you see this. It helps us pace ideas.", opts: ["Great", "Okay", "A bit low", "Stressed", "Lonely", "Tired"] },
+    { q: "How social do you feel?", hint: "We'll match the crowd size.", opts: ["Quiet & solo", "Small groups", "Big events are fine", "Surprise me"] },
+    { q: "Who's coming with you?", hint: "Pick adult or family events.", opts: ["Just me", "Partner", "Friends", "Kids — family events", "My dog"] },
+    { q: "When are you free?", hint: "Choose all that fit.", opts: ["Weekday mornings", "Weekday evenings", "Weekends", "Lunch breaks", "Anytime"] },
+    { q: "How many ideas per week?", hint: "Start small — you can change it later.", opts: ["1–2", "3–4", "5+"] },
+    { q: "What's your budget?", hint: "Many city events are free.", opts: ["Free only", "Up to 30 zł", "Up to 100 zł", "No limit"] },
+    { q: "Where do you live?", hint: "To show what's near you.", opts: ["Śródmieście", "Mokotów", "Wola", "Praga", "Ursynów", "Bielany", "Other"] },
+    { q: "How far are you up for?", hint: "By foot, bike or public transport.", opts: ["My neighbourhood", "Up to 30 min", "All of Warsaw"] },
+    { q: "Anything we should know?", hint: "Optional — helps pick fitting places.", opts: ["Step-free access", "Quiet places", "Polish not needed", "No alcohol", "None"] },
   ];
   if (step < 0)
     return (
@@ -141,13 +149,17 @@ function Onboarding({ done }: { done: () => void }) {
   const tog = (o: string) => setPicked((p) => (p.includes(o) ? p.filter((x) => x !== o) : [...p, o]));
   return (
     <div className="flex h-full flex-col px-6 pb-10 pt-14">
-      <div className="mb-10 flex gap-1.5">{steps.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} />)}</div>
-      <p className="text-sm text-muted-foreground">Question {step + 1} / {steps.length}</p>
-      <h2 className="mb-8 font-display text-4xl font-black leading-tight">{s.q}</h2>
-      <div className="flex flex-wrap gap-2">
+      <div className="mb-6 flex gap-1">{steps.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} />)}</div>
+      <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <button onClick={() => setStep(step - 1)}>‹ Back</button>
+        <span>Question {step + 1} / {steps.length}</span>
+      </div>
+      <h2 className="mt-4 font-display text-4xl font-black leading-tight">{s.q}</h2>
+      <p className="mb-6 mt-2 text-sm text-muted-foreground">{s.hint}</p>
+      <div className="-mx-1 flex flex-1 flex-wrap content-start gap-2 overflow-y-auto px-1 pb-4">
         {s.opts.map((o) => <button key={o} onClick={() => tog(o)} className={`rounded-full border px-4 py-2.5 text-sm font-medium ${picked.includes(o) ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`}>{o}</button>)}
       </div>
-      <button onClick={() => (step < steps.length - 1 ? setStep(step + 1) : done())} className="mt-auto rounded-full bg-primary py-4 font-bold text-primary-foreground">
+      <button onClick={() => (step < steps.length - 1 ? setStep(step + 1) : done())} className="mt-4 rounded-full bg-primary py-4 font-bold text-primary-foreground">
         {step < steps.length - 1 ? "Continue" : "Show my ideas"}
       </button>
     </div>
