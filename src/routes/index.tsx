@@ -138,22 +138,22 @@ function Onboarding({ done }: { done: () => void }) {
         </div>
         <div className="absolute inset-x-6 bottom-10 space-y-5">
           <div className="space-y-3">
-            <p className="text-lg text-foreground/90">Slow down and</p>
-            <h2 className="font-display text-5xl font-black leading-[0.95]">Find your Warszawa</h2>
+            <p className="text-lg text-foreground/90">Zwolnij i</p>
+            <h2 className="font-display text-5xl font-black leading-[0.95]">odkryj swoją Warszawę</h2>
             <p className="text-sm leading-relaxed text-foreground/80">
-              A gentle companion for mindful moments in the city — quiet parks, small gatherings, new places and people. One step at a time, at your own pace.
+              Twój spokojny towarzysz uważnych chwil w mieście — ciche parki, kameralne spotkania, nowe miejsca i ludzie. Krok po kroku, w Twoim tempie.
             </p>
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
-            {["🌿 Notice more", "🤝 Find your people", "💛 Feel better"].map((t) => (
+            {["🌿 Zauważaj więcej", "🤝 Znajdź swoich ludzi", "💛 Poczuj się lepiej"].map((t) => (
               <span key={t} className="rounded-full bg-card/70 px-3 py-1.5 backdrop-blur">{t}</span>
             ))}
           </div>
           <button onClick={() => setStep(0)} className="flex w-full items-center gap-3 rounded-full bg-card/80 p-2 backdrop-blur">
             <span className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground"><ChevronsRight className="size-5" /></span>
-            <span className="flex-1 text-center font-bold">Let's get to know you</span>
+            <span className="flex-1 text-center font-bold">Poznajmy się</span>
           </button>
-          <p className="text-center text-xs text-muted-foreground">11 short questions · about 2 minutes</p>
+          <p className="text-center text-xs text-muted-foreground">11 krótkich pytań · około 2 minut</p>
         </div>
       </div>
     );
