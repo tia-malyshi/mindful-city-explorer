@@ -12,8 +12,8 @@ const colors = {
   rose: "bg-rose text-primary-foreground hover:bg-rose", sun: "bg-sun text-primary-foreground hover:bg-sun",
   accent: "bg-accent text-accent-foreground hover:bg-accent", violet: "bg-violet text-primary-foreground hover:bg-violet",
 };
-const points = [[80, 160], [240, 160], [60, 360], [260, 360], [80, 560], [240, 560]];
-const leafPoints = [[[38, 55], [122, 55]], [[198, 55], [282, 55]], [[38, 265], [38, 455]], [[282, 265], [282, 455]], [[38, 665], [122, 665]], [[198, 665], [282, 665]]];
+const points = [[80, 160], [240, 160], [60, 360], [260, 360], [80, 560], [240, 560]] as const;
+const leafPoints = [[[38, 55], [122, 55]], [[198, 55], [282, 55]], [[38, 265], [38, 455]], [[282, 265], [282, 455]], [[38, 665], [122, 665]], [[198, 665], [282, 665]]] as const;
 
 export function InterestMindMap({ groups, active, setActive, unexplored, sourceId, setSourceId }: {
   groups: Group[]; active: string | null; setActive: (name: string | null) => void; unexplored: boolean;
