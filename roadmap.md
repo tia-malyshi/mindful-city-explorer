@@ -12,3 +12,4 @@
 - [ ] Save ratings, quest photos and text/voice reflection answers.
 - [ ] Assemble photo memories with original reflection sources.
 - [ ] Verify signed-in saving, read-back, voice, privacy and existing navigation.
+- [ ] Make the bottom Reflection button and its feedback/memories choices visibly accessible.

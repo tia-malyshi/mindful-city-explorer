@@ -31,8 +31,6 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Mental-health friendly city exploration app prototype built on Warsaw Open Data." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:image", content: warsawPhoto.url },
-      { name: "twitter:image", content: warsawPhoto.url },
     ],
   }),
   component: Index,
@@ -70,7 +68,6 @@ function Index() {
   const [answers, setAnswers] = useState<ProfileAnswer[]>([]);
   const [name, setName] = useState("");
   const [reflectionEvent, setReflectionEvent] = useState(1);
-  const [profileError, setProfileError] = useState("");
   useEffect(() => {
     if (!personal.user) { setName(""); setAnswers([]); return; }
     const profile = personal.data.profile;
