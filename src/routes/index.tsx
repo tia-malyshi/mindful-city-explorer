@@ -24,7 +24,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Tab = "onboard" | "feed" | "all" | "calendar" | "quest" | "feedback" | "mymap" | "journal" | "insights";
+type Tab = "onboard" | "feed" | "all" | "calendar" | "quest" | "feedback" | "mymap" | "map" | "journal" | "insights";
 
 type Ev = { id: number; t: string; c: Cat; src: string; day: number; time: string; district: string; km: number; aud: "Adults" | "Family" | "All ages"; free: boolean; img: string };
 type Cat = "Nature" | "Sport" | "Culture" | "Social";
@@ -54,7 +54,7 @@ function Index() {
   const toggle = (id: number) => setPlanned((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   const ctx = { filters, setFilters, planned, toggle, setTab };
 
-  const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "1 · Warszawa"], ["all", "All events + filters"], ["calendar", "2 · Calendar"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["insights", "6 · Insights + interests"], ["journal", "Monthly story"]];
+  const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "1 · Discover (swipe)"], ["all", "Event list"], ["map", "Map"], ["calendar", "2 · Calendar"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["insights", "6 · Insights + interests"], ["journal", "Monthly story"]];
 
   return (
     <main className="min-h-screen px-6 py-10 lg:py-14">
@@ -88,6 +88,7 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
           {tab === "onboard" && <Onboarding done={() => ctx.setTab("feed")} />}
           {tab === "feed" && <Feed ctx={ctx} />}
           {tab === "all" && <AllEvents ctx={ctx} />}
+          {tab === "map" && <WarsawMap ctx={ctx} />}
           {tab === "calendar" && <CalendarScreen ctx={ctx} />}
           {tab === "quest" && <Quest />}
           {tab === "feedback" && <Feedback />}
@@ -98,7 +99,7 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
         {!full && (
           <div className="absolute inset-x-4 bottom-5 flex justify-between rounded-full border bg-card/90 p-1.5 backdrop-blur">
             {([["feed", Home], ["calendar", CalendarDays], ["quest", Sparkles], ["insights", Lightbulb]] as const).map(([t, I]) => {
-              const on = tab === t || (t === "feed" && tab === "all") || (t === "quest" && tab === "feedback") || (t === "insights" && tab === "mymap");
+              const on = tab === t || (t === "feed" && (tab === "all" || tab === "map")) || (t === "quest" && tab === "feedback") || (t === "insights" && tab === "mymap");
               return (
                 <button key={t} onClick={() => ctx.setTab(t)} className={`flex h-12 flex-1 items-center justify-center rounded-full transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
                   <I className="size-5" />
@@ -210,42 +211,102 @@ function SearchBar({ q, setQ, onFilter, count }: { q: string; setQ: (s: string) 
 
 const activeCount = (f: Filters) => f.cats.length + (f.aud !== "Any" ? 1 : 0) + (f.free ? 1 : 0) + (f.maxKm < 10 ? 1 : 0);
 
+const pos: Record<string, [number, number]> = { "Mokotów": [52, 70], "Śródmieście": [50, 48], "Powiśle": [58, 45], "Praga": [66, 38], "Praga-Płd.": [70, 52], "Wola": [36, 46] };
+
 function Feed({ ctx }: { ctx: Ctx }) {
-  const [q, setQ] = useState("");
-  const [sheet, setSheet] = useState(false);
-  const [tabSel, setTabSel] = useState("For you");
-  const list = applyFilters(ctx.filters, q);
+  const [i, setI] = useState(0);
+  const [anim, setAnim] = useState<"" | "l" | "r" | "u">("");
+  const [why, setWhy] = useState(false);
+  const deck = applyFilters(ctx.filters);
+  const e = deck[i % Math.max(deck.length, 1)];
+  const act = (d: "l" | "r" | "u") => {
+    if (!e) return;
+    if (d !== "l" && !ctx.planned.includes(e.id)) ctx.toggle(e.id);
+    setAnim(d);
+    setTimeout(() => { setAnim(""); setWhy(false); setI((x) => x + 1); }, 250);
+  };
+  const tr = anim === "l" ? "-translate-x-[120%] -rotate-12 opacity-0" : anim === "r" ? "translate-x-[120%] rotate-12 opacity-0" : anim === "u" ? "-translate-y-[120%] opacity-0" : "";
   return (
-    <div className="space-y-5">
-      <div className="pt-2">
-        <p className="text-lg text-muted-foreground">Choose your</p>
-        <h2 className="font-display text-5xl font-black leading-none">Warszawa</h2>
+    <div className="flex h-full flex-col gap-4">
+      <div className="flex items-end justify-between pt-2">
+        <div>
+          <h2 className="font-display text-4xl font-black leading-none">Discover</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Explored: {i}</p>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => i > 0 && setI(i - 1)} aria-label="Undo" className="flex size-10 items-center justify-center rounded-full bg-muted"><RefreshCw className="size-4" /></button>
+          <button onClick={() => ctx.setTab("all")} aria-label="List" className="flex size-10 items-center justify-center rounded-full bg-muted"><List className="size-4" /></button>
+          <button onClick={() => ctx.setTab("map")} aria-label="Map" className="flex size-10 items-center justify-center rounded-full bg-muted"><MapIcon className="size-4" /></button>
+        </div>
       </div>
-      <SearchBar q={q} setQ={setQ} onFilter={() => setSheet(true)} count={activeCount(ctx.filters)} />
-      <div className="flex gap-5 text-sm">
-        {["For you", "This weekend", "Nearby"].map((t) => <button key={t} onClick={() => setTabSel(t)} className={tabSel === t ? "border-b-2 border-primary pb-1 font-bold" : "pb-1 text-muted-foreground"}>{t}</button>)}
-      </div>
-      <div className="no-scrollbar -mx-5 flex snap-x gap-3 overflow-x-auto px-5">
-        {list.slice(0, 5).map((e) => (
-          <div key={e.id} className="relative h-72 w-56 shrink-0 snap-start overflow-hidden rounded-3xl">
-            <img src={e.img} alt={e.t} loading="lazy" width={816} height={816} className="absolute inset-0 size-full object-cover" />
-            <div className="scrim absolute inset-0" />
-            <span className={`absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold text-ink ${catColor[e.c]}`}>{e.c}</span>
-            <button onClick={() => ctx.toggle(e.id)} className={`absolute right-3 top-3 flex size-9 items-center justify-center rounded-full ${ctx.planned.includes(e.id) ? "bg-primary text-primary-foreground" : "bg-card/70 backdrop-blur"}`}>
-              {ctx.planned.includes(e.id) ? <Check className="size-4" /> : <Plus className="size-4" />}
-            </button>
-            <div className="absolute inset-x-4 bottom-4">
-              <p className="font-display text-lg font-extrabold leading-tight">{e.t}</p>
-              <p className="mt-1 text-xs opacity-80">Oct {e.day} · {e.time} · {e.km} km</p>
-            </div>
+      {e ? (
+        <div className={`overflow-hidden rounded-3xl bg-card transition duration-300 ${tr}`}>
+          <div className="relative h-60">
+            <img src={e.img} alt={e.t} className="size-full object-cover" />
+            {e.free && <span className="absolute right-3 top-3 rounded-full bg-card px-2.5 py-1 text-xs font-bold">Free</span>}
           </div>
+          <div className="space-y-2 p-5">
+            <span className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold text-ink ${catColor[e.c]}`}>{e.c}</span>
+            <p className="font-display text-2xl font-extrabold leading-tight">{e.t}</p>
+            <p className="flex items-center gap-3 text-xs text-muted-foreground"><span className="flex items-center gap-1"><Clock className="size-3" />Oct {e.day} · {e.time}</span><span className="flex items-center gap-1"><MapPin className="size-3" />{e.district}</span></p>
+            <button onClick={() => setWhy(!why)} className="text-xs font-bold text-primary">Why am I seeing this?</button>
+            {why && <p className="text-xs text-muted-foreground">You chose {e.c.toLowerCase()} and calm activities, and it's {e.km} km from you.</p>}
+          </div>
+        </div>
+      ) : <p className="text-sm text-muted-foreground">No ideas match your filters.</p>}
+      <div className="flex items-start justify-center gap-6">
+        {([["l", X, "Skip", "border-rose text-rose", "size-16"], ["u", Sparkles, "Superlike", "border-sun text-sun", "size-14"], ["r", Check, "Interested", "border-primary bg-primary text-primary-foreground", "size-16"]] as const).map(([d, I, l, c, sz]) => (
+          <button key={d} onClick={() => act(d)} className="flex flex-col items-center gap-1 text-xs">
+            <span className={`flex items-center justify-center rounded-full border-2 ${c} ${sz}`}><I className="size-6" /></span>{l}
+          </button>
         ))}
-        {list.length === 0 && <p className="text-sm text-muted-foreground">No events match your filters.</p>}
       </div>
-      <button onClick={() => ctx.setTab("all")} className="flex w-full items-center justify-between rounded-2xl bg-card p-4">
-        <span className="flex items-center gap-2 text-sm font-bold"><List className="size-4 text-primary" />See all {list.length} events</span><ChevronRight className="size-4" />
-      </button>
-      {sheet && <FilterSheet ctx={ctx} close={() => setSheet(false)} />}
+    </div>
+  );
+}
+
+function WarsawMap({ ctx }: { ctx: Ctx }) {
+  const [sel, setSel] = useState<Ev | null>(null);
+  const list = applyFilters(ctx.filters);
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3 pt-2">
+        <button onClick={() => ctx.setTab("feed")} className="flex size-10 items-center justify-center rounded-full bg-muted"><ChevronLeft className="size-5" /></button>
+        <h2 className="font-display text-3xl font-black">All events</h2>
+      </div>
+      <ViewToggle ctx={ctx} map />
+      <div className="relative h-[460px] overflow-hidden rounded-3xl bg-card">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full">
+          <path d="M70 0 C 62 20, 52 30, 60 45 S 72 70, 62 100" className="fill-none stroke-sky" strokeWidth="5" opacity="0.5" />
+          <circle cx="50" cy="50" r="30" className="fill-none stroke-border" strokeDasharray="1 2" />
+        </svg>
+        <span className="absolute left-[54%] top-[18%] text-[10px] text-sky">Wisła</span>
+        <span className="absolute left-[45%] top-[52%] flex size-4 items-center justify-center rounded-full bg-foreground ring-4 ring-foreground/20" title="You" />
+        {list.map((e, k) => {
+          const [x, y] = pos[e.district] ?? [50, 50];
+          return (
+            <button key={e.id} onClick={() => setSel(e)} style={{ left: `${x + (k % 3) * 3}%`, top: `${y + (k % 2) * 4}%` }} className={`absolute flex size-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-background text-ink shadow-lg ${catColor[e.c]} ${sel?.id === e.id ? "scale-125" : ""}`}>
+              <MapPin className="size-4" />
+            </button>
+          );
+        })}
+        {sel && (
+          <div className="absolute inset-x-3 bottom-3 flex items-center gap-3 rounded-2xl bg-background p-3">
+            <img src={sel.img} alt="" className="size-12 rounded-xl object-cover" />
+            <div className="flex-1"><p className="text-sm font-bold leading-tight">{sel.t}</p><p className="text-xs text-muted-foreground">Oct {sel.day} · {sel.time} · {sel.district}</p></div>
+            <button onClick={() => ctx.toggle(sel.id)} className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground">{ctx.planned.includes(sel.id) ? <Check className="size-4" /> : <Plus className="size-4" />}</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ViewToggle({ ctx, map }: { ctx: Ctx; map?: boolean }) {
+  return (
+    <div className="flex w-fit rounded-full bg-muted p-1 text-sm font-bold">
+      <button onClick={() => ctx.setTab("all")} className={`flex items-center gap-1.5 rounded-full px-4 py-2 ${!map ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}><List className="size-4" />List</button>
+      <button onClick={() => ctx.setTab("map")} className={`flex items-center gap-1.5 rounded-full px-4 py-2 ${map ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}><MapIcon className="size-4" />Map</button>
     </div>
   );
 }
@@ -261,6 +322,7 @@ function AllEvents({ ctx }: { ctx: Ctx }) {
         <h2 className="font-display text-3xl font-black">All events</h2>
       </div>
       <SearchBar q={q} setQ={setQ} onFilter={() => setSheet(true)} count={activeCount(ctx.filters)} />
+      <ViewToggle ctx={ctx} />
       <div className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 text-xs">
         {(["Nature", "Sport", "Culture", "Social"] as Cat[]).map((c) => {
           const on = ctx.filters.cats.includes(c);
