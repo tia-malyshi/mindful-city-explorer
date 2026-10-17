@@ -9,7 +9,7 @@ export const interestGroups = [
   { name: "Learning", tone: "violet", values: ["Books & writing", "Crafts & workshops", "Science & technology"] },
 ] as const;
 
-export function profileInterests(answers: ProfileAnswer[], reflections: { category: string; event_title: string; id: string }[]) {
+export function profileInterests<T extends { category: string; event_title: string; id: string }>(answers: ProfileAnswer[], reflections: T[]) {
   const selected = new Set(answers.find(answer => answer.question === "What interests you?")?.values ?? []);
   return interestGroups.map(group => ({
     ...group,
