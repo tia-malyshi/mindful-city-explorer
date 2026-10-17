@@ -14,7 +14,151 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      memories: {
+        Row: {
+          created_at: string
+          id: string
+          photo_ids: string[]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          photo_ids: string[]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          photo_ids?: string[]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memories_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          answers: Json
+          created_at: string
+          display_name: string
+          id: string
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          display_name?: string
+          id: string
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          display_name?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      reflection_media: {
+        Row: {
+          created_at: string
+          event_id: number
+          id: string
+          kind: string
+          origin: string
+          path: string
+          question: string | null
+          reflection_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: number
+          id?: string
+          kind: string
+          origin: string
+          path: string
+          question?: string | null
+          reflection_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: number
+          id?: string
+          kind?: string
+          origin?: string
+          path?: string
+          question?: string | null
+          reflection_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reflection_media_reflection_id_fkey"
+            columns: ["reflection_id"]
+            isOneToOne: false
+            referencedRelation: "reflections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reflection_media_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reflections: {
+        Row: {
+          answers: Json
+          category: string
+          created_at: string
+          district: string
+          event_id: number
+          event_title: string
+          id: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          category: string
+          created_at?: string
+          district: string
+          event_id: number
+          event_title: string
+          id?: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          category?: string
+          created_at?: string
+          district?: string
+          event_id?: number
+          event_title?: string
+          id?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reflections_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
