@@ -26,18 +26,18 @@ export const Route = createFileRoute("/")({
 
 type Tab = "onboard" | "feed" | "all" | "calendar" | "quest" | "feedback" | "mymap" | "map" | "journal" | "insights";
 
-type Ev = { id: number; t: string; c: Cat; src: string; day: number; time: string; district: string; km: number; aud: "Adults" | "Family" | "All ages"; free: boolean; img: string };
+type Ev = { id: number; t: string; c: Cat; src: string; day: number; time: string; district: string; km: number; aud: "Adults" | "Family" | "All ages"; free: boolean; img: string; price?: number };
 type Cat = "Nature" | "Sport" | "Culture" | "Social";
 const catColor: Record<Cat, string> = { Nature: "bg-sage", Sport: "bg-sky", Culture: "bg-rose", Social: "bg-sun" };
 
 const events: Ev[] = [
   { id: 1, t: "Sunset walk, Pole Mokotowskie", c: "Nature", src: "Open Data", day: 19, time: "18:30", district: "Mokotów", km: 1.2, aud: "All ages", free: true, img: park },
-  { id: 2, t: "Open swim, Warszawianka", c: "Sport", src: "Open Data", day: 20, time: "07:00", district: "Mokotów", km: 2.8, aud: "Adults", free: false, img: pool },
+  { id: 2, t: "Open swim, Warszawianka", c: "Sport", src: "Open Data", day: 20, time: "07:00", district: "Mokotów", km: 2.8, aud: "Adults", free: false, price: 18, img: pool },
   { id: 3, t: "Jazz on Old Town square", c: "Culture", src: "Facebook", day: 24, time: "20:00", district: "Śródmieście", km: 4.5, aud: "Adults", free: true, img: oldtown },
   { id: 4, t: "Run club, Wisła boulevards", c: "Sport", src: "Facebook", day: 25, time: "08:00", district: "Powiśle", km: 3.4, aud: "All ages", free: true, img: river },
   { id: 5, t: "Family picnic, Ogród Saski", c: "Social", src: "Facebook", day: 25, time: "13:00", district: "Śródmieście", km: 3.9, aud: "Family", free: true, img: park },
-  { id: 6, t: "Board games night, Praga", c: "Social", src: "Facebook", day: 22, time: "19:00", district: "Praga", km: 5.6, aud: "Adults", free: false, img: oldtown },
-  { id: 7, t: "Kids science day, Kopernik", c: "Culture", src: "Open Data", day: 27, time: "10:00", district: "Powiśle", km: 3.6, aud: "Family", free: false, img: river },
+  { id: 6, t: "Board games night, Praga", c: "Social", src: "Facebook", day: 22, time: "19:00", district: "Praga", km: 5.6, aud: "Adults", free: false, price: 15, img: oldtown },
+  { id: 7, t: "Kids science day, Kopernik", c: "Culture", src: "Open Data", day: 27, time: "10:00", district: "Powiśle", km: 3.6, aud: "Family", free: false, price: 25, img: river },
   { id: 8, t: "Outdoor gym, Skaryszewski", c: "Sport", src: "Open Data", day: 21, time: "Any", district: "Praga-Płd.", km: 5.1, aud: "All ages", free: true, img: park },
   { id: 9, t: "Library meetup: Polish for newcomers", c: "Social", src: "Open Data", day: 23, time: "17:30", district: "Wola", km: 4.0, aud: "Adults", free: true, img: oldtown },
 ];
@@ -243,7 +243,7 @@ function Feed({ ctx }: { ctx: Ctx }) {
         <div className={`overflow-hidden rounded-3xl bg-card transition duration-300 ${tr}`}>
           <div className="relative h-60">
             <img src={e.img} alt={e.t} className="size-full object-cover" />
-            {e.free && <span className="absolute right-3 top-3 rounded-full bg-card px-2.5 py-1 text-xs font-bold">Free</span>}
+            <span className="absolute right-3 top-3 rounded-full bg-card px-2.5 py-1 text-xs font-bold">{e.free ? "Free" : `from ${e.price} zł`}</span>
           </div>
           <div className="space-y-2 p-5">
             <span className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold text-ink ${catColor[e.c]}`}>{e.c}</span>
@@ -335,7 +335,7 @@ function AllEvents({ ctx }: { ctx: Ctx }) {
             <img src={e.img} alt="" loading="lazy" className="size-12 rounded-2xl object-cover" />
             <div className="flex-1">
               <p className="font-bold leading-tight">{e.t}</p>
-              <p className="text-xs opacity-75">Oct {e.day} · {e.time} · {e.district} · {e.aud}{e.free ? " · free" : ""}</p>
+              <p className="text-xs opacity-75">Oct {e.day} · {e.time} · {e.district} · {e.aud} · {e.free ? "free" : `from ${e.price} zł`}</p>
             </div>
             <button onClick={() => ctx.toggle(e.id)} className="flex size-9 items-center justify-center rounded-full bg-ink/20">
               {ctx.planned.includes(e.id) ? <Check className="size-4" /> : <Plus className="size-4" />}
