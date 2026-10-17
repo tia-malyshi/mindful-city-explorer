@@ -1,4 +1,4 @@
-- [ ] Add Polish, English, and Russian interface choices across screens.
-- [ ] Rename the app MojaWawa, including page titles.
-- [ ] Verify language switching and existing navigation.
-- [ ] Restore loading after the language update and verify a fresh visit.
+- [x] Add Polish, English, and Russian interface choices across screens.
+- [x] Rename the app MojaWawa, including page titles.
+- [x] Verify language switching and existing navigation.
+- [x] Restore loading after the language update and verify a fresh visit.
