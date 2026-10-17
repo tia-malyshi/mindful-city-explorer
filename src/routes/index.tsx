@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { InsightsScreen } from "@/components/InsightsScreen";
+import { Lightbulb } from "lucide-react";
 import {
   Home, Map as MapIcon, CalendarDays, Sparkles, Smile, Check, X, Camera, Mic, MessageCircle,
   MapPin, Clock, ThumbsUp, ThumbsDown, Play, Plus, Minus, Search, SlidersHorizontal, ChevronLeft,
@@ -24,7 +26,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Tab = "onboard" | "feed" | "all" | "calendar" | "quest" | "feedback" | "mymap" | "journal";
+type Tab = "onboard" | "feed" | "all" | "calendar" | "quest" | "feedback" | "mymap" | "journal" | "insights";
 
 type Ev = { id: number; t: string; c: Cat; src: string; day: number; time: string; district: string; km: number; aud: "Adults" | "Family" | "All ages"; free: boolean; img: string };
 type Cat = "Nature" | "Sport" | "Culture" | "Social";
@@ -54,7 +56,7 @@ function Index() {
   const toggle = (id: number) => setPlanned((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   const ctx = { filters, setFilters, planned, toggle, setTab };
 
-  const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "1 · Warszawa"], ["all", "All events + filters"], ["calendar", "2 · Calendar"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["mymap", "6 · My map"], ["journal", "Monthly story"]];
+  const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "1 · Warszawa"], ["all", "All events + filters"], ["calendar", "2 · Calendar"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["mymap", "6 · My map"], ["journal", "Monthly story"], ["insights", "Insights"]];
 
   return (
     <main className="min-h-screen px-6 py-10 lg:py-14">
@@ -93,14 +95,16 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
           {tab === "feedback" && <Feedback />}
           {tab === "mymap" && <MyMap />}
           {tab === "journal" && <Journal />}
+          {tab === "insights" && <InsightsScreen activities={events.filter((event) => ctx.planned.includes(event.id))} onExplore={() => ctx.setTab("feed")} />}
         </div>
         {!full && (
           <div className="absolute inset-x-4 bottom-5 flex justify-between rounded-full border bg-card/90 p-1.5 backdrop-blur">
-            {([["feed", Home], ["calendar", CalendarDays], ["quest", Sparkles], ["feedback", Smile], ["mymap", MapIcon]] as const).map(([t, I]) => {
+            {([["feed", Home, "Explore"], ["calendar", CalendarDays, "Calendar"], ["quest", Sparkles, "Quests"], ["feedback", Smile, "Feedback"], ["mymap", MapIcon, "My map"], ["insights", Lightbulb, "Insights"]] as const).map(([t, I, label]) => {
               const on = tab === t || (t === "feed" && tab === "all");
               return (
-                <button key={t} onClick={() => ctx.setTab(t)} className={`flex h-12 flex-1 items-center justify-center rounded-full transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
-                  <I className="size-5" />
+                <button key={t} aria-label={label} aria-current={on ? "page" : undefined} onClick={() => ctx.setTab(t)} className={`flex h-12 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-full transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
+                  <I className="size-4" aria-hidden="true" />
+                  <span className="text-[8px] font-medium">{label}</span>
                 </button>
               );
             })}
