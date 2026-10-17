@@ -9,4 +9,4 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Use a bundled Warsaw logo for the welcome screen and derive the public favicon from the same asset to keep app identity consistent.
+- Keep the bundled Warsaw logo as the source for the public favicon; welcome photography uses a Lovable Assets pointer so uploaded media stays outside the source bundle.
