@@ -96,7 +96,7 @@ function Onboarding({ done }: { done: () => void }) {
     { q: "Who's coming with you?", opts: ["Just me", "Partner", "Friends", "Kids (family events)"] },
     { q: "How far are you up for?", opts: ["My neighbourhood", "Up to 30 min", "Anywhere in Warsaw"] },
   ];
-  const s = steps[step];
+  const s = steps[step]!;
   const toggle = (o: string) => setPicked((p) => (p.includes(o) ? p.filter((x) => x !== o) : [...p, o]));
   return (
     <div className="flex min-h-full flex-col">
@@ -122,7 +122,7 @@ function HomeScreen() {
   const [accepted, setAccepted] = useState<number | null>(null);
   const [chosen, setChosen] = useState<string[]>(["photo"]);
   const [review, setReview] = useState<null | "up" | "down">(null);
-  const idea = ideas[idx % ideas.length];
+  const idea = ideas[idx % ideas.length]!;
   const I = idea.icon;
 
   if (accepted !== null) {
@@ -193,7 +193,7 @@ function HomeScreen() {
 }
 
 function MapScreen() {
-  const [sel, setSel] = useState(ideas[0]);
+  const [sel, setSel] = useState(ideas[0]!);
   return (
     <div className="space-y-4">
       <h2 className="font-display text-3xl">Near you</h2>
