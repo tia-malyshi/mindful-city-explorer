@@ -1,4 +1,11 @@
 export const translations: Record<string, { pl: string; ru: string }> = {
+  "Week": { pl: "Tydzień", ru: "Неделя" },
+  "Month": { pl: "Miesiąc", ru: "Месяц" },
+  "Previous week": { pl: "Poprzedni tydzień", ru: "Предыдущая неделя" },
+  "Next week": { pl: "Następny tydzień", ru: "Следующая неделя" },
+  "Planned": { pl: "Zaplanowane", ru: "Запланировано" },
+  "Suggested": { pl: "Propozycje", ru: "Рекомендации" },
+  "Flexible time": { pl: "Dowolna godzina", ru: "В любое время" },
   "Daily suggestion": { pl: "Pomysł na dziś", ru: "Идея на сегодня" },
   "Home": { pl: "Dziś", ru: "Сегодня" },
   "Profile": { pl: "Profil", ru: "Профиль" },

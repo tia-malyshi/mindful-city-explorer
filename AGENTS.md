@@ -13,3 +13,4 @@
 - Localize display text through the shared language context and translation catalog, keeping event IDs and filter keys stable; store only the interface-language preference in browser storage after hydration.
 - Keep pre-question language selection and post-onboarding language settings in focused components that share the same language context so changes do not reset questionnaire or activity state.
 - Keep prototype questionnaire answers and editable profile name in shared screen state, and render profile actions in a focused menu; invitations use native sharing with clipboard and selectable-text fallbacks, without implying account creation.
+- Weekly calendar positions use a pure time parser and a dedicated scrollable timeline; never invent a start time or duration for activities without one.

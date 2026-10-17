@@ -401,6 +401,7 @@ function CalendarScreen({ ctx }: { ctx: Ctx }) {
           );
         })}
       </div>
+      </>}
       <p className="pt-2 text-xs uppercase tracking-wider text-muted-foreground">{tx("Oct ")}{sel} {tx(" · ")}{byDay(sel).length} {tx(" events")}</p>
       {byDay(sel).map((e) => {
         const on = ctx.planned.includes(e.id);
