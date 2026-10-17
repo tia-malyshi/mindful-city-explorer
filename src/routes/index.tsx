@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useLanguage } from "@/lib/language";
-import { LanguageSelector } from "@/components/language-selector";
+import { LanguageChoice } from "@/components/language-choice";
+import { LanguageSettings } from "@/components/language-settings";
 import {
-  Home, Map as MapIcon, CalendarDays, Sparkles, Smile, Check, X, Camera, Mic, MessageCircle,
+  Settings, Home, Map as MapIcon, CalendarDays, Sparkles, Smile, Check, X, Camera, Mic, MessageCircle,
   MapPin, Clock, ThumbsUp, ThumbsDown, Play, Plus, Minus, Search, SlidersHorizontal, ChevronLeft,
   ChevronRight, ChevronsRight, List, Grid3x3, Trees, Music, Dumbbell, Users, Waves, Lightbulb, RefreshCw,
 } from "lucide-react";
@@ -85,11 +86,13 @@ type Ctx = { filters: Filters; setFilters: (f: Filters) => void; planned: number
 
 function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
   const { t: tx, language } = useLanguage();
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const full = tab === "onboard";
   return (
     <div className="mx-auto w-[375px] rounded-[3.2rem] border-[10px] border-ink bg-background shadow-phone ring-1 ring-border">
       <div className="relative h-[780px] overflow-hidden rounded-[2.6rem]">
-        <div className="absolute right-5 top-5 z-10"><LanguageSelector /></div>
+        {!full && <Button variant="ghost" size="icon" title={language === "pl" ? "Ustawienia" : language === "ru" ? "Настройки" : "Settings"} aria-label={language === "pl" ? "Ustawienia" : language === "ru" ? "Настройки" : "Settings"} onClick={() => setSettingsOpen(true)} className="absolute right-5 top-6 z-10 rounded-full bg-card"><Settings className="size-4" /></Button>}
+        {settingsOpen && <LanguageSettings close={() => setSettingsOpen(false)} />}
         {!full && <div className="flex justify-between px-7 pt-3 text-xs font-bold"><span>{tx("9:41")}</span><span>{tx("5G ▮▮▮")}</span></div>}
         <div className={`no-scrollbar h-full overflow-y-auto ${full ? "" : "px-5 pb-28 pt-12"}`}>
           {tab === "onboard" && <Onboarding done={() => ctx.setTab("feed")} />}
@@ -137,7 +140,8 @@ function Onboarding({ done }: { done: () => void }) {
     { q: "How far are you up for?", hint: "By foot, bike or public transport.", opts: ["My neighbourhood", "Up to 30 min", "All of Warsaw"] },
     { q: "Anything we should know?", hint: "Optional — helps pick fitting places.", opts: ["Step-free access", "Quiet places", "Polish not needed", "No alcohol", "None"] },
   ];
-  if (step < 0)
+  if (step === -2) return <LanguageChoice next={() => setStep(0)} back={() => setStep(-1)} />;
+  if (step === -1)
     return (
       <div className="flex h-full min-h-0 flex-col bg-welcome text-foreground">
         <div className="relative min-h-0 flex-1 overflow-hidden">
@@ -146,7 +150,7 @@ function Onboarding({ done }: { done: () => void }) {
         </div>
         <div className="shrink-0 px-7 pb-10 pt-7 text-center">
           <h2 className="font-display text-3xl font-semibold leading-snug">{tx("Zwolnij i odkryj")}<br />{tx("swoją Warszawę")}</h2>
-          <Button onClick={() => setStep(0)} className="mt-7 h-14 w-full rounded-full text-base font-bold">
+          <Button onClick={() => setStep(-2)} className="mt-7 h-14 w-full rounded-full text-base font-bold">
             {tx("\n            Poznajmy się ")}<ChevronRight className="ml-2 size-5" />
           </Button>
         </div>
