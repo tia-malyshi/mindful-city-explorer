@@ -9,7 +9,7 @@ import park from "@/assets/park.jpg";
 import oldtown from "@/assets/oldtown.jpg";
 import pool from "@/assets/pool.jpg";
 import river from "@/assets/river.jpg";
-import warsawLogo from "@/assets/warsaw-logo-refined.png";
+import warsawPhoto from "@/assets/warsaw-welcome.webp.asset.json";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -133,13 +133,13 @@ function Onboarding({ done }: { done: () => void }) {
   ];
   if (step < 0)
     return (
-      <div className="flex h-full min-h-0 flex-col bg-welcome px-7 pb-10 pt-14 text-foreground">
-        <div className="flex min-h-0 flex-1 items-center justify-center">
-          <img src={warsawLogo} alt="Logo Warszawy — Pałac Kultury" width={1024} height={1024} className="size-52 object-contain" />
+      <div className="flex h-full min-h-0 flex-col bg-welcome text-foreground">
+        <div className="relative min-h-0 flex-1 overflow-hidden">
+          <img src={warsawPhoto.url} alt="Pałac Kultury i Nauki widziany z warszawskiej ulicy" width={768} height={994} className="absolute inset-0 h-full w-full object-cover object-center" />
         </div>
-        <div className="shrink-0 pb-5 text-center">
+        <div className="shrink-0 px-7 pb-10 pt-7 text-center">
           <h2 className="font-display text-3xl font-semibold leading-snug">Zwolnij i odkryj<br />swoją Warszawę</h2>
-          <Button onClick={() => setStep(0)} className="mt-12 h-14 w-full rounded-full text-base font-bold">
+          <Button onClick={() => setStep(0)} className="mt-7 h-14 w-full rounded-full text-base font-bold">
             Poznajmy się <ChevronRight className="ml-2 size-5" />
           </Button>
         </div>
