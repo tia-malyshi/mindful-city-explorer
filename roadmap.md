@@ -14,5 +14,5 @@
 - [ ] Verify signed-in saving and read-back with real media — blocked until the first user signs in or confirms a personal MojaWawa account.
 - [x] Verify public navigation, reflection calculations, recording lifecycle and private-data policies.
 - [x] Make the bottom Reflection button and its feedback/memories choices visibly accessible.
-- [ ] Add a create-account choice immediately after the questionnaire.
-- [ ] Restore the clearer weekly Insights presentation with original-information access.
+- [x] Add a create-account choice immediately after the questionnaire; verify signup form and optional discovery access.
+- [x] Restore the clearer weekly Insights presentation with original-information access; verify bottom-menu access and source toggle.
