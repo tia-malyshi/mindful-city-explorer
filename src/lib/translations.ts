@@ -4,7 +4,6 @@ export const translations: Record<string, { pl: string; ru: string }> = {
   "Mind map": { pl: "Mapa myśli", ru: "Ментальная карта" },
   "Show unexplored interests": { pl: "Pokaż nieodkryte zainteresowania", ru: "Показать неизученные интересы" },
   "Hide unexplored interests": { pl: "Ukryj nieodkryte zainteresowania", ru: "Скрыть неизученные интересы" },
-  "You": { pl: "Ty", ru: "Вы" },
   "No interests selected yet": { pl: "Nie wybrano jeszcze zainteresowań", ru: "Интересы пока не выбраны" },
   "Your activities": { pl: "Twoje aktywności", ru: "Ваши события" },
   "Reviewed": { pl: "Ocenione", ru: "Оценено" },

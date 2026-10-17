@@ -27,7 +27,7 @@ export function ProfileMenu({ close, settings, quest, account, save, answers, na
   return <div role="dialog" aria-modal="true" aria-label={t("Profile")} className="no-scrollbar absolute inset-0 z-30 overflow-y-auto bg-background px-6 pb-10 pt-12">
     <div className="mb-7 flex items-center justify-between"><h2 className="font-display text-3xl font-semibold">{t("Profile")}</h2><Button variant="ghost" size="icon" aria-label={t("Close profile")} onClick={close}><X /></Button></div>
     <div className="mb-5 flex items-center gap-3"><UserRound className="size-10 text-primary" /><span className="font-display text-xl font-semibold">{name || t("You")}</span></div>
-    {loading ? <p role="status" className="mb-6 text-sm text-muted-foreground">{t("Loading…")}</p> : error ? <p role="alert" className="mb-6 text-sm text-destructive">{t("Could not load your activities")}</p> : <div className="mb-7"><ProfileInterests answers={answers} reflections={reflections} media={media} /></div>}
+    {loading ? <p role="status" className="mb-6 text-sm text-muted-foreground">{t("Loading…")}</p> : error ? <p role="alert" className="mb-6 text-sm text-destructive">{t("Could not load your activities")}</p> : <div className="mb-7"><ProfileInterests answers={answers} reflections={reflections ?? []} media={media ?? []} /></div>}
     <h3 className="mb-4 border-t pt-6 font-display text-xl font-semibold">{t("Profile details")}</h3>
     <label htmlFor="profile-name" className="mb-2 block text-sm text-muted-foreground">{t("Name")}</label>
     <Input id="profile-name" value={name} onChange={(e) => setName(e.target.value)} placeholder={t("Not provided")} />
