@@ -19,3 +19,4 @@
 - [x] Show the interest circle, connected interest branches and reviewed activity history directly in Profile; verify the profile flow.
 - [x] Add randomized sample profile activities with interactive branches, ratings and source details; verify isolation from saved activities.
 - [x] Restyle the profile mind map as a radial circle-and-branch diagram and verify interactive sources.
+- [x] Match the compact mind-map reference with a light canvas, central oval, colored labels and small activity points; verify source access.
