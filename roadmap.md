@@ -7,3 +7,8 @@
 - [x] Make Home daily suggestions, split interests and Insights, and keep four bottom tabs.
 - [x] Add profile access with questionnaire data, settings, and a working invitation share action.
 - [x] Verify updated navigation and profile flow.
+- [ ] Move interests into profile and add Reflection as the fourth-menu replacement.
+- [ ] Add personal accounts and private persisted profile data.
+- [ ] Save ratings, quest photos and text/voice reflection answers.
+- [ ] Assemble photo memories with original reflection sources.
+- [ ] Verify signed-in saving, read-back, voice, privacy and existing navigation.
