@@ -132,19 +132,20 @@ function Onboarding({ done }: { done: () => void }) {
   ];
   if (step < 0)
     return (
-      <div className="relative h-full">
-        <img src={warsawArt} alt="Illustration of Warsaw: Palace of Culture, Syrenka and the Vistula" width={768} height={1536} className="absolute inset-0 size-full object-cover object-top" />
-        <div className="absolute inset-x-6 top-14">
-          <p className="text-sm font-medium tracking-wide text-foreground/80">Cześć 👋</p>
+      <div className="flex h-full min-h-0 flex-col bg-background">
+        <div className="relative min-h-0 flex-1 overflow-hidden">
+          <img src={warsawArt} alt="Illustration of Warsaw: Palace of Culture, Syrenka and the Vistula" width={768} height={1536} className="absolute inset-x-0 top-0 h-auto w-full" />
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent" />
+          <p className="absolute left-6 top-12 text-sm font-medium tracking-wide text-foreground/80">Cześć 👋</p>
         </div>
-        <div className="absolute inset-x-6 bottom-10 space-y-5">
-          <div className="space-y-3">
+        <div className="shrink-0 space-y-6 px-6 pb-10 pt-2">
+          <div className="space-y-1">
             <p className="text-lg text-foreground/90">Zwolnij i</p>
-            <h2 className="font-display text-5xl font-black leading-[0.95]">odkryj swoją Warszawę</h2>
+            <h2 className="font-display text-[clamp(2.25rem,11vw,3rem)] font-black leading-[0.95] text-balance">odkryj swoją Warszawę</h2>
           </div>
-          <button onClick={() => setStep(0)} className="flex w-full items-center gap-3 rounded-full bg-card/80 p-2 backdrop-blur">
-            <span className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground"><ChevronsRight className="size-5" /></span>
-            <span className="flex-1 text-center font-bold">Poznajmy się</span>
+          <button onClick={() => setStep(0)} className="flex w-full items-center gap-3 rounded-full bg-card p-2">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"><ChevronsRight className="size-5" /></span>
+            <span className="flex-1 pr-12 text-center font-bold">Poznajmy się</span>
           </button>
         </div>
       </div>
