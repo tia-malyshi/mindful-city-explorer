@@ -52,7 +52,7 @@ const applyFilters = (f: Filters, q = "", t: (text: string) => string = (text) =
   events.filter((e) => (f.cats.length === 0 || f.cats.includes(e.c)) && (f.aud === "Any" || e.aud === f.aud || e.aud === "All ages") && (!f.free || e.free) && e.km <= f.maxKm && t(e.t).toLowerCase().includes(q.toLowerCase()));
 
 function Index() {
-  const { t } = useLanguage();
+  const { t: tx } = useLanguage();
   const [tab, setTab] = useState<Tab>("onboard");
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [planned, setPlanned] = useState<number[]>([1, 3]);
@@ -65,12 +65,12 @@ function Index() {
     <main className="min-h-screen px-6 py-10 lg:py-14">
       <div className="mx-auto grid max-w-6xl items-start gap-12 lg:grid-cols-[1fr_390px_1fr]">
         <section className="space-y-6 lg:pt-6">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">{t("Warsaw Open Data · prototype")}</p>
-          <h1 className="font-display text-7xl font-black leading-none tracking-tight">{t("MojaWawa")}</h1>
-          <p className="text-muted-foreground">{t("Small city adventures, tiny challenges and a monthly story that shows how rich your life is.")}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">{tx("Warsaw Open Data · prototype")}</p>
+          <h1 className="font-display text-5xl font-black leading-none">{tx("MojaWawa")}</h1>
+          <p className="text-muted-foreground">{tx("Small city adventures, tiny challenges and a monthly story that shows how rich your life is.")}</p>
           <nav className="flex flex-wrap gap-2">
             {labels.map(([t, l]) => (
-              <button key={t} onClick={() => setTab(t)} className={`rounded-full border px-4 py-1.5 text-sm transition ${tab === t ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted"}`}>{t(l)}</button>
+              <button key={t} onClick={() => setTab(t)} className={`rounded-full border px-4 py-1.5 text-sm transition ${tab === t ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted"}`}>{tx(l)}</button>
             ))}
           </nav>
         </section>
@@ -84,13 +84,13 @@ function Index() {
 type Ctx = { filters: Filters; setFilters: (f: Filters) => void; planned: number[]; toggle: (id: number) => void; setTab: (t: Tab) => void };
 
 function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const full = tab === "onboard";
   return (
     <div className="mx-auto w-[375px] rounded-[3.2rem] border-[10px] border-ink bg-background shadow-phone ring-1 ring-border">
       <div className="relative h-[780px] overflow-hidden rounded-[2.6rem]">
         <div className="absolute right-5 top-5 z-10"><LanguageSelector /></div>
-        {!full && <div className="flex justify-between px-7 pt-3 text-xs font-bold"><span>{t("9:41")}</span><span>{t("5G ▮▮▮")}</span></div>}
+        {!full && <div className="flex justify-between px-7 pt-3 text-xs font-bold"><span>{tx("9:41")}</span><span>{tx("5G ▮▮▮")}</span></div>}
         <div className={`no-scrollbar h-full overflow-y-auto ${full ? "" : "px-5 pb-28 pt-12"}`}>
           {tab === "onboard" && <Onboarding done={() => ctx.setTab("feed")} />}
           {tab === "feed" && <Feed ctx={ctx} />}
@@ -121,7 +121,7 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
 }
 
 function Onboarding({ done }: { done: () => void }) {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const [step, setStep] = useState(-1);
   const [picked, setPicked] = useState<string[]>([]);
   const steps = [
@@ -141,13 +141,13 @@ function Onboarding({ done }: { done: () => void }) {
     return (
       <div className="flex h-full min-h-0 flex-col bg-welcome text-foreground">
         <div className="relative min-h-0 flex-1 overflow-hidden">
-          <img src={warsawPhoto.url} alt={t("Pałac Kultury i Nauki widziany z warszawskiej ulicy")} width={768} height={994} className="absolute inset-0 h-full w-full object-cover object-center" />
+          <img src={warsawPhoto.url} alt={tx("Pałac Kultury i Nauki widziany z warszawskiej ulicy")} width={768} height={994} className="absolute inset-0 h-full w-full object-cover object-center" />
           <div aria-hidden="true" className="welcome-photo-fade pointer-events-none absolute inset-x-0 bottom-0 h-48" />
         </div>
         <div className="shrink-0 px-7 pb-10 pt-7 text-center">
-          <h2 className="font-display text-3xl font-semibold leading-snug">{t("Zwolnij i odkryj")}<br />{t("swoją Warszawę")}</h2>
+          <h2 className="font-display text-3xl font-semibold leading-snug">{tx("Zwolnij i odkryj")}<br />{tx("swoją Warszawę")}</h2>
           <Button onClick={() => setStep(0)} className="mt-7 h-14 w-full rounded-full text-base font-bold">
-            {t("\n            Poznajmy się ")}<ChevronRight className="ml-2 size-5" />
+            {tx("\n            Poznajmy się ")}<ChevronRight className="ml-2 size-5" />
           </Button>
         </div>
       </div>
@@ -159,40 +159,40 @@ function Onboarding({ done }: { done: () => void }) {
     <div className="flex h-full flex-col px-6 pb-10 pt-14">
       <div className="mb-6 flex gap-1">{steps.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} />)}</div>
       <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <button onClick={() => setStep(step - 1)}>{t("‹ Back")}</button>
-        <span>{t("Question ")}{step + 1} {t(" / ")}{steps.length}</span>
+        <button onClick={() => setStep(step - 1)}>{tx("‹ Back")}</button>
+        <span>{tx("Question ")}{step + 1} {tx(" / ")}{steps.length}</span>
       </div>
-      <h2 className="mt-4 font-display text-4xl font-black leading-tight">{t(s.q)}</h2>
-      <p className="mb-6 mt-2 text-sm text-muted-foreground">{t(s.hint)}</p>
+      <h2 className="mt-4 font-display text-4xl font-black leading-tight">{tx(s.q)}</h2>
+      <p className="mb-6 mt-2 text-sm text-muted-foreground">{tx(s.hint)}</p>
       <div className="-mx-1 no-scrollbar flex flex-1 flex-wrap content-start gap-2 overflow-y-auto px-1 pb-4">
-        {s.opts.map((o) => <button key={o} onClick={() => tog(o)} className={`rounded-full border px-4 py-2.5 text-sm font-medium ${picked.includes(o) ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`}>{t(o)}</button>)}
+        {s.opts.map((o) => <button key={o} onClick={() => tog(o)} className={`rounded-full border px-4 py-2.5 text-sm font-medium ${picked.includes(o) ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`}>{tx(o)}</button>)}
       </div>
       <button onClick={() => (step < steps.length - 1 ? setStep(step + 1) : done())} className="mt-4 rounded-full bg-primary py-4 font-bold text-primary-foreground">
-        {step < steps.length - 1 ? t("Continue") : t("Show my ideas")}
+        {step < steps.length - 1 ? tx("Continue") : tx("Show my ideas")}
       </button>
     </div>
   );
 }
 
 function FilterSheet({ ctx, close }: { ctx: Ctx; close: () => void }) {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const [f, setF] = useState(ctx.filters);
   const cats: Cat[] = ["Nature", "Sport", "Culture", "Social"];
   const chip = (on: boolean) => `rounded-full border px-3 py-1.5 text-xs font-medium ${on ? "border-primary bg-primary text-primary-foreground" : "bg-muted"}`;
   return (
     <div className="absolute inset-0 z-20 flex flex-col justify-end bg-ink/70">
       <div className="space-y-5 rounded-t-[2rem] border-t bg-card p-6 pb-10">
-        <div className="flex items-center justify-between"><h3 className="font-display text-2xl font-black">{t("Filters")}</h3><button onClick={close}><X className="size-5" /></button></div>
-        <div><p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">{t("Category")}</p>
-          <div className="flex flex-wrap gap-2">{cats.map((c) => <button key={c} className={chip(f.cats.includes(c))} onClick={() => setF({ ...f, cats: f.cats.includes(c) ? f.cats.filter((x) => x !== c) : [...f.cats, c] })}>{t(c)}</button>)}</div></div>
-        <div><p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">{t("For")}</p>
-          <div className="flex gap-2">{["Any", "Adults", "Family"].map((a) => <button key={a} className={chip(f.aud === a)} onClick={() => setF({ ...f, aud: a })}>{t(a)}</button>)}</div></div>
-        <div><p className="mb-2 flex justify-between text-xs uppercase tracking-wider text-muted-foreground"><span>{t("Distance")}</span><span className="text-foreground">{t("up to ")}{f.maxKm} {t(" km")}</span></p>
+        <div className="flex items-center justify-between"><h3 className="font-display text-2xl font-black">{tx("Filters")}</h3><button onClick={close}><X className="size-5" /></button></div>
+        <div><p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">{tx("Category")}</p>
+          <div className="flex flex-wrap gap-2">{cats.map((c) => <button key={c} className={chip(f.cats.includes(c))} onClick={() => setF({ ...f, cats: f.cats.includes(c) ? f.cats.filter((x) => x !== c) : [...f.cats, c] })}>{tx(c)}</button>)}</div></div>
+        <div><p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">{tx("For")}</p>
+          <div className="flex gap-2">{["Any", "Adults", "Family"].map((a) => <button key={a} className={chip(f.aud === a)} onClick={() => setF({ ...f, aud: a })}>{tx(a)}</button>)}</div></div>
+        <div><p className="mb-2 flex justify-between text-xs uppercase tracking-wider text-muted-foreground"><span>{tx("Distance")}</span><span className="text-foreground">{tx("up to ")}{f.maxKm} {tx(" km")}</span></p>
           <input type="range" min={1} max={10} value={f.maxKm} onChange={(e) => setF({ ...f, maxKm: +e.target.value })} className="w-full accent-primary" /></div>
-        <label className="flex items-center justify-between text-sm"><span>{t("Free only")}</span><input type="checkbox" checked={f.free} onChange={(e) => setF({ ...f, free: e.target.checked })} className="size-5 accent-primary" /></label>
+        <label className="flex items-center justify-between text-sm"><span>{tx("Free only")}</span><input type="checkbox" checked={f.free} onChange={(e) => setF({ ...f, free: e.target.checked })} className="size-5 accent-primary" /></label>
         <div className="flex gap-2">
-          <button onClick={() => setF(defaultFilters)} className="flex-1 rounded-full border py-3 text-sm">{t("Reset")}</button>
-          <button onClick={() => { ctx.setFilters(f); close(); }} className="flex-[2] rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground">{t("Show ")}{applyFilters(f).length} {t(" events")}</button>
+          <button onClick={() => setF(defaultFilters)} className="flex-1 rounded-full border py-3 text-sm">{tx("Reset")}</button>
+          <button onClick={() => { ctx.setFilters(f); close(); }} className="flex-[2] rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground">{tx("Show ")}{applyFilters(f).length} {tx(" events")}</button>
         </div>
       </div>
     </div>
@@ -200,12 +200,12 @@ function FilterSheet({ ctx, close }: { ctx: Ctx; close: () => void }) {
 }
 
 function SearchBar({ q, setQ, onFilter, count }: { q: string; setQ: (s: string) => void; onFilter: () => void; count: number }) {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   return (
     <div className="flex gap-2">
       <div className="flex flex-1 items-center gap-2 rounded-full bg-muted px-4 py-3">
         <Search className="size-4 text-muted-foreground" />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("Search events, places…")} className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tx("Search events, places…")} className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
       </div>
       <button onClick={onFilter} className="relative flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
         <SlidersHorizontal className="size-5" />
@@ -220,7 +220,7 @@ const activeCount = (f: Filters) => f.cats.length + (f.aud !== "Any" ? 1 : 0) + 
 const pos: Record<string, [number, number]> = { "Mokotów": [52, 70], "Śródmieście": [50, 48], "Powiśle": [58, 45], "Praga": [66, 38], "Praga-Płd.": [70, 52], "Wola": [36, 46] };
 
 function Feed({ ctx }: { ctx: Ctx }) {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const [i, setI] = useState(0);
   const [anim, setAnim] = useState<"" | "l" | "r" | "u">("");
   const [why, setWhy] = useState(false);
@@ -237,20 +237,20 @@ function Feed({ ctx }: { ctx: Ctx }) {
     <div className="flex h-full flex-col gap-4">
       <div className="flex items-end justify-between pt-2">
         <div>
-          <h2 className="font-display text-4xl font-black leading-none">{t("Discover")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t("Explored: ")}{i}</p>
+          <h2 className="font-display text-4xl font-black leading-none">{tx("Discover")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{tx("Explored: ")}{i}</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => i > 0 && setI(i - 1)} aria-label={t("Undo")} className="flex size-10 items-center justify-center rounded-full bg-muted"><RefreshCw className="size-4" /></button>
-          <button onClick={() => ctx.setTab("all")} aria-label={t("List")} className="flex size-10 items-center justify-center rounded-full bg-muted"><List className="size-4" /></button>
-          <button onClick={() => ctx.setTab("map")} aria-label={t("Map")} className="flex size-10 items-center justify-center rounded-full bg-muted"><MapIcon className="size-4" /></button>
+          <button onClick={() => i > 0 && setI(i - 1)} aria-label={tx("Undo")} className="flex size-10 items-center justify-center rounded-full bg-muted"><RefreshCw className="size-4" /></button>
+          <button onClick={() => ctx.setTab("all")} aria-label={tx("List")} className="flex size-10 items-center justify-center rounded-full bg-muted"><List className="size-4" /></button>
+          <button onClick={() => ctx.setTab("map")} aria-label={tx("Map")} className="flex size-10 items-center justify-center rounded-full bg-muted"><MapIcon className="size-4" /></button>
         </div>
       </div>
-      {e.free ? t("Free") : `${t("from")} ${e.price} zł`}
+      {e.free ? tx("Free") : `${tx("from")} ${e.price} zł`}
       <div className="flex items-start justify-center gap-6">
         {([["l", X, "Skip", "border-rose text-rose", "size-16"], ["u", Sparkles, "Superlike", "border-sun text-sun", "size-14"], ["r", Check, "Interested", "border-primary bg-primary text-primary-foreground", "size-16"]] as const).map(([d, I, l, c, sz]) => (
           <button key={d} onClick={() => act(d)} className="flex flex-col items-center gap-1 text-xs">
-            <span className={`flex items-center justify-center rounded-full border-2 ${c} ${sz}`}><I className="size-6" /></span>{t(l)}
+            <span className={`flex items-center justify-center rounded-full border-2 ${c} ${sz}`}><I className="size-6" /></span>{tx(l)}
           </button>
         ))}
       </div>
@@ -259,14 +259,14 @@ function Feed({ ctx }: { ctx: Ctx }) {
 }
 
 function WarsawMap({ ctx }: { ctx: Ctx }) {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const [sel, setSel] = useState<Ev | null>(null);
   const list = applyFilters(ctx.filters);
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3 pt-2">
         <button onClick={() => ctx.setTab("feed")} className="flex size-10 items-center justify-center rounded-full bg-muted"><ChevronLeft className="size-5" /></button>
-        <h2 className="font-display text-3xl font-black">{t("All events")}</h2>
+        <h2 className="font-display text-3xl font-black">{tx("All events")}</h2>
       </div>
       <ViewToggle ctx={ctx} map />
       <div className="relative h-[460px] overflow-hidden rounded-3xl bg-card">
@@ -274,8 +274,8 @@ function WarsawMap({ ctx }: { ctx: Ctx }) {
           <path d="M70 0 C 62 20, 52 30, 60 45 S 72 70, 62 100" className="fill-none stroke-sky" strokeWidth="5" opacity="0.5" />
           <circle cx="50" cy="50" r="30" className="fill-none stroke-border" strokeDasharray="1 2" />
         </svg>
-        <span className="absolute left-[54%] top-[18%] text-[10px] text-sky">{t("Wisła")}</span>
-        <span className="absolute left-[45%] top-[52%] flex size-4 items-center justify-center rounded-full bg-foreground ring-4 ring-foreground/20" title={t("You")} />
+        <span className="absolute left-[54%] top-[18%] text-[10px] text-sky">{tx("Wisła")}</span>
+        <span className="absolute left-[45%] top-[52%] flex size-4 items-center justify-center rounded-full bg-foreground ring-4 ring-foreground/20" title={tx("You")} />
         {list.map((e, k) => {
           const [x, y] = pos[e.district] ?? [50, 50];
           return (
@@ -287,7 +287,7 @@ function WarsawMap({ ctx }: { ctx: Ctx }) {
         {sel && (
           <div className="absolute inset-x-3 bottom-3 flex items-center gap-3 rounded-2xl bg-background p-3">
             <img src={sel.img} alt="" className="size-12 rounded-xl object-cover" />
-            <div className="flex-1"><p className="text-sm font-bold leading-tight">{t(sel.t)}</p><p className="text-xs text-muted-foreground">{t("Oct ")}{sel.day} {t(" · ")}{t(sel.time)} {t(" · ")}{sel.district}</p></div>
+            <div className="flex-1"><p className="text-sm font-bold leading-tight">{tx(sel.t)}</p><p className="text-xs text-muted-foreground">{tx("Oct ")}{sel.day} {tx(" · ")}{tx(sel.time)} {tx(" · ")}{sel.district}</p></div>
             <button onClick={() => ctx.toggle(sel.id)} className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground">{ctx.planned.includes(sel.id) ? <Check className="size-4" /> : <Plus className="size-4" />}</button>
           </div>
         )}
@@ -297,17 +297,17 @@ function WarsawMap({ ctx }: { ctx: Ctx }) {
 }
 
 function ViewToggle({ ctx, map }: { ctx: Ctx; map?: boolean }) {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   return (
     <div className="flex w-fit rounded-full bg-muted p-1 text-sm font-bold">
-      <button onClick={() => ctx.setTab("all")} className={`flex items-center gap-1.5 rounded-full px-4 py-2 ${!map ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}><List className="size-4" />{t("List")}</button>
-      <button onClick={() => ctx.setTab("map")} className={`flex items-center gap-1.5 rounded-full px-4 py-2 ${map ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}><MapIcon className="size-4" />{t("Map")}</button>
+      <button onClick={() => ctx.setTab("all")} className={`flex items-center gap-1.5 rounded-full px-4 py-2 ${!map ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}><List className="size-4" />{tx("List")}</button>
+      <button onClick={() => ctx.setTab("map")} className={`flex items-center gap-1.5 rounded-full px-4 py-2 ${map ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}><MapIcon className="size-4" />{tx("Map")}</button>
     </div>
   );
 }
 
 function AllEvents({ ctx }: { ctx: Ctx }) {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const [q, setQ] = useState("");
   const [sheet, setSheet] = useState(false);
   const list = applyFilters(ctx.filters, q, t).sort((a, b) => a.day - b.day);
@@ -315,14 +315,14 @@ function AllEvents({ ctx }: { ctx: Ctx }) {
     <div className="space-y-4">
       <div className="flex items-center gap-3 pt-2">
         <button onClick={() => ctx.setTab("feed")} className="flex size-10 items-center justify-center rounded-full bg-muted"><ChevronLeft className="size-5" /></button>
-        <h2 className="font-display text-3xl font-black">{t("All events")}</h2>
+        <h2 className="font-display text-3xl font-black">{tx("All events")}</h2>
       </div>
       <SearchBar q={q} setQ={setQ} onFilter={() => setSheet(true)} count={activeCount(ctx.filters)} />
       <ViewToggle ctx={ctx} />
       <div className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 text-xs">
         {(["Nature", "Sport", "Culture", "Social"] as Cat[]).map((c) => {
           const on = ctx.filters.cats.includes(c);
-          return <button key={c} onClick={() => ctx.setFilters({ ...ctx.filters, cats: on ? ctx.filters.cats.filter((x) => x !== c) : [...ctx.filters.cats, c] })} className={`shrink-0 rounded-full px-3 py-1.5 font-bold ${on ? `${catColor[c]} text-ink` : "bg-muted text-muted-foreground"}`}>{t(c)}</button>;
+          return <button key={c} onClick={() => ctx.setFilters({ ...ctx.filters, cats: on ? ctx.filters.cats.filter((x) => x !== c) : [...ctx.filters.cats, c] })} className={`shrink-0 rounded-full px-3 py-1.5 font-bold ${on ? `${catColor[c]} text-ink` : "bg-muted text-muted-foreground"}`}>{tx(c)}</button>;
         })}
       </div>
       <div className="-space-y-3">
@@ -330,8 +330,8 @@ function AllEvents({ ctx }: { ctx: Ctx }) {
           <div key={e.id} className={`relative flex items-center gap-3 rounded-3xl p-4 pb-6 text-ink shadow-lg ${catColor[e.c]}`}>
             <img src={e.img} alt="" loading="lazy" className="size-12 rounded-2xl object-cover" />
             <div className="flex-1">
-              <p className="font-bold leading-tight">{t(e.t)}</p>
-              <p className="text-xs opacity-75">{t("Oct ")}{e.day} {t(" · ")}{t(e.time)} {t(" · ")}{e.district} {t(" · ")}{t(e.aud)} {t(" · ")}{e.free ? t("Free") : `${t("from")} ${e.price} zł`}</p>
+              <p className="font-bold leading-tight">{tx(e.t)}</p>
+              <p className="text-xs opacity-75">{tx("Oct ")}{e.day} {tx(" · ")}{tx(e.time)} {tx(" · ")}{e.district} {tx(" · ")}{tx(e.aud)} {tx(" · ")}{e.free ? tx("Free") : `${tx("from")} ${e.price} zł`}</p>
             </div>
             <button onClick={() => ctx.toggle(e.id)} className="flex size-9 items-center justify-center rounded-full bg-ink/20">
               {ctx.planned.includes(e.id) ? <Check className="size-4" /> : <Plus className="size-4" />}
@@ -345,7 +345,7 @@ function AllEvents({ ctx }: { ctx: Ctx }) {
 }
 
 function CalendarScreen({ ctx }: { ctx: Ctx }) {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const [view, setView] = useState<"week" | "month">("month");
   const [sel, setSel] = useState(25);
   const firstOffset = 3; // Oct 1 2026 is Thursday
@@ -356,12 +356,12 @@ function CalendarScreen({ ctx }: { ctx: Ctx }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between pt-2">
-        <h2 className="font-display text-4xl font-black">{t("October")}</h2>
+        <h2 className="font-display text-4xl font-black">{tx("October")}</h2>
         <div className="flex rounded-full bg-muted p-1">
           {([["week", List], ["month", Grid3x3]] as const).map(([v, I]) => <button key={v} onClick={() => setView(v)} className={`flex size-9 items-center justify-center rounded-full ${view === v ? "bg-primary text-primary-foreground" : ""}`}><I className="size-4" /></button>)}
         </div>
       </div>
-      <div className="grid grid-cols-7 gap-1 text-center text-[10px] text-muted-foreground">{(language === "pl" ? ["Pn", "Wt", "Śr", "Cz", "Pt", "So", "Nd"] : language === "ru" ? ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] : ["M", "T", "W", "T", "F", "S", "S"]).map((d, i) => <span key={i}>{t(d)}</span>)}</div>
+      <div className="grid grid-cols-7 gap-1 text-center text-[10px] text-muted-foreground">{(language === "pl" ? ["Pn", "Wt", "Śr", "Cz", "Pt", "So", "Nd"] : language === "ru" ? ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] : ["M", "T", "W", "T", "F", "S", "S"]).map((d, i) => <span key={i}>{tx(d)}</span>)}</div>
       <div className="grid grid-cols-7 gap-1">
         {view === "month" && Array.from({ length: firstOffset }).map((_, i) => <div key={"e" + i} />)}
         {days.map((d) => {
@@ -369,24 +369,24 @@ function CalendarScreen({ ctx }: { ctx: Ctx }) {
           const mine = evs.some((e) => ctx.planned.includes(e.id));
           return (
             <button key={d} onClick={() => setSel(d)} className={`flex aspect-square flex-col items-center justify-center rounded-xl text-sm ${sel === d ? "bg-primary font-bold text-primary-foreground" : mine ? "bg-secondary" : "bg-card"}`}>
-              {t(d)}
+              {tx(d)}
               <span className="mt-0.5 flex gap-0.5">{evs.slice(0, 3).map((e) => <span key={e.id} className={`size-1 rounded-full ${catColor[e.c]}`} />)}</span>
             </button>
           );
         })}
       </div>
-      <p className="pt-2 text-xs uppercase tracking-wider text-muted-foreground">{t("Oct ")}{sel} {t(" · ")}{byDay(sel).length} {t(" events")}</p>
+      <p className="pt-2 text-xs uppercase tracking-wider text-muted-foreground">{tx("Oct ")}{sel} {tx(" · ")}{byDay(sel).length} {tx(" events")}</p>
       {byDay(sel).map((e) => {
         const on = ctx.planned.includes(e.id);
         return (
           <div key={e.id} className={`flex items-center gap-3 rounded-2xl p-3 ${on ? "bg-secondary" : "bg-card"}`}>
             <span className={`h-10 w-1 rounded-full ${catColor[e.c]}`} />
-            <div className="flex-1"><p className="text-sm font-bold">{t(e.t)}</p><p className="text-xs text-muted-foreground">{t(e.time)} {t(" · ")}{e.district}</p></div>
+            <div className="flex-1"><p className="text-sm font-bold">{tx(e.t)}</p><p className="text-xs text-muted-foreground">{tx(e.time)} {tx(" · ")}{e.district}</p></div>
             <button onClick={() => ctx.toggle(e.id)} className={`flex size-9 items-center justify-center rounded-full ${on ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{on ? <Minus className="size-4" /> : <Plus className="size-4" />}</button>
           </div>
         );
       })}
-      {byDay(sel).length === 0 && <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground">{t("Free day — want a 10-minute idea?")}</p>}
+      {byDay(sel).length === 0 && <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground">{tx("Free day — want a 10-minute idea?")}</p>}
     </div>
   );
 }
@@ -394,7 +394,7 @@ function CalendarScreen({ ctx }: { ctx: Ctx }) {
 const tasks = [{ id: "photo", label: "Take 3 pictures", icon: Camera }, { id: "voice", label: "Reflect in a voice note", icon: Mic }, { id: "talk", label: "Talk to a stranger", icon: MessageCircle }];
 
 function Quest() {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const [idx, setIdx] = useState(0);
   const [accepted, setAccepted] = useState(false);
   const [chosen, setChosen] = useState<string[]>(["photo"]);
@@ -404,39 +404,39 @@ function Quest() {
   if (accepted)
     return (
       <div className="space-y-5 pt-2">
-        <p className="text-xs uppercase tracking-wider text-primary">{t("Your quest")}</p>
-        <h2 className="font-display text-3xl font-black leading-tight">{t(e.t)}</h2>
+        <p className="text-xs uppercase tracking-wider text-primary">{tx("Your quest")}</p>
+        <h2 className="font-display text-3xl font-black leading-tight">{tx(e.t)}</h2>
         <div className="space-y-2">
           {tasks.map((t) => {
             const on = chosen.includes(t.id);
             return (
               <button key={t.id} onClick={() => setChosen((c) => (on ? c.filter((x) => x !== t.id) : [...c, t.id]))} className={`flex w-full items-center gap-3 rounded-2xl p-4 text-left ${on ? "bg-primary text-primary-foreground" : "bg-card"}`}>
-                <t.icon className="size-5" /><span className="flex-1 text-sm font-medium">{t(t.label)}</span>{on && <Check className="size-4" />}
+                <t.icon className="size-5" /><span className="flex-1 text-sm font-medium">{tx(t.label)}</span>{on && <Check className="size-4" />}
               </button>
             );
           })}
         </div>
         <div className="rounded-3xl bg-card p-4">
-          <p className="mb-3 text-sm font-bold">{t("After: how was it?")}</p>
+          <p className="mb-3 text-sm font-bold">{tx("After: how was it?")}</p>
           <div className="flex gap-2">
-            <button onClick={() => setReview("up")} className={`flex flex-1 items-center justify-center gap-2 rounded-full py-3 text-sm ${review === "up" ? "bg-sage text-ink" : "bg-muted"}`}><ThumbsUp className="size-4" />{t("Good")}</button>
-            <button onClick={() => setReview("down")} className={`flex flex-1 items-center justify-center gap-2 rounded-full py-3 text-sm ${review === "down" ? "bg-rose text-ink" : "bg-muted"}`}><ThumbsDown className="size-4" />{t("Not for me")}</button>
+            <button onClick={() => setReview("up")} className={`flex flex-1 items-center justify-center gap-2 rounded-full py-3 text-sm ${review === "up" ? "bg-sage text-ink" : "bg-muted"}`}><ThumbsUp className="size-4" />{tx("Good")}</button>
+            <button onClick={() => setReview("down")} className={`flex flex-1 items-center justify-center gap-2 rounded-full py-3 text-sm ${review === "down" ? "bg-rose text-ink" : "bg-muted"}`}><ThumbsDown className="size-4" />{tx("Not for me")}</button>
           </div>
-          {review && <div className="mt-3 flex items-center justify-between rounded-2xl bg-muted p-3 text-sm"><span>{review === "up" ? t("More like this?") : t("Fewer like this?")}</span><button onClick={() => { setAccepted(false); setReview(null); setIdx(idx + 1); }} className="font-bold text-primary">{t("Yes")}</button></div>}
+          {review && <div className="mt-3 flex items-center justify-between rounded-2xl bg-muted p-3 text-sm"><span>{review === "up" ? tx("More like this?") : tx("Fewer like this?")}</span><button onClick={() => { setAccepted(false); setReview(null); setIdx(idx + 1); }} className="font-bold text-primary">{tx("Yes")}</button></div>}
         </div>
       </div>
     );
   return (
     <div className="space-y-5 pt-2">
-      <div><p className="text-muted-foreground">{t("Dzień dobry, Ola")}</p><h2 className="font-display text-4xl font-black">{t("Today's idea")}</h2></div>
+      <div><p className="text-muted-foreground">{tx("Dzień dobry, Ola")}</p><h2 className="font-display text-4xl font-black">{tx("Today's idea")}</h2></div>
       <div className="relative h-[420px] overflow-hidden rounded-[2rem]">
-        <img src={e.img} alt={t(e.t)} className="absolute inset-0 size-full object-cover" />
+        <img src={e.img} alt={tx(e.t)} className="absolute inset-0 size-full object-cover" />
         <div className="scrim absolute inset-0" />
         <div className="absolute inset-x-5 bottom-5 space-y-2">
-          <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold text-ink ${catColor[e.c]}`}>{t(e.c)} {t(" · ")}{t(e.aud)}</span>
-          <h3 className="font-display text-2xl font-black leading-tight">{t(e.t)}</h3>
-          <div className="flex gap-4 text-xs opacity-80"><span className="flex items-center gap-1"><Clock className="size-3" />{t("Oct ")}{e.day}{t(", ")}{t(e.time)}</span><span className="flex items-center gap-1"><MapPin className="size-3" />{e.km} {t(" km")}</span></div>
-          <p className="flex gap-2 text-xs opacity-80"><Sparkles className="size-3 shrink-0 text-primary" />{t("You want more calm and liked last week's park walk.")}</p>
+          <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold text-ink ${catColor[e.c]}`}>{tx(e.c)} {tx(" · ")}{tx(e.aud)}</span>
+          <h3 className="font-display text-2xl font-black leading-tight">{tx(e.t)}</h3>
+          <div className="flex gap-4 text-xs opacity-80"><span className="flex items-center gap-1"><Clock className="size-3" />{tx("Oct ")}{e.day}{tx(", ")}{tx(e.time)}</span><span className="flex items-center gap-1"><MapPin className="size-3" />{e.km} {tx(" km")}</span></div>
+          <p className="flex gap-2 text-xs opacity-80"><Sparkles className="size-3 shrink-0 text-primary" />{tx("You want more calm and liked last week's park walk.")}</p>
         </div>
       </div>
       <div className="flex justify-center gap-6">
@@ -448,17 +448,17 @@ function Quest() {
 }
 
 function Feedback() {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const [mood, setMood] = useState<number | null>(null);
   const [rec, setRec] = useState(false);
   return (
     <div className="space-y-5 pt-2">
-      <div className="relative h-40 overflow-hidden rounded-3xl"><img src={oldtown} alt="" className="size-full object-cover" /><div className="scrim absolute inset-0" /><p className="absolute bottom-3 left-4 text-sm font-bold">{t("Jazz on Old Town square · just now")}</p></div>
-      <h2 className="font-display text-4xl font-black">{t("How was it?")}</h2>
-      <div className="flex justify-between">{["😞", "😐", "🙂", "😄", "🤩"].map((m, i) => <button key={m} onClick={() => setMood(i)} className={`flex size-14 items-center justify-center rounded-full text-2xl ${mood === i ? "bg-primary" : "bg-card"}`}>{t(m)}</button>)}</div>
-      <div className="space-y-2">{["What surprised you?", "Did you meet anyone?", "Would you go again?"].map((q) => <div key={q} className="rounded-2xl bg-card p-4 text-sm">{t(q)}</div>)}</div>
+      <div className="relative h-40 overflow-hidden rounded-3xl"><img src={oldtown} alt="" className="size-full object-cover" /><div className="scrim absolute inset-0" /><p className="absolute bottom-3 left-4 text-sm font-bold">{tx("Jazz on Old Town square · just now")}</p></div>
+      <h2 className="font-display text-4xl font-black">{tx("How was it?")}</h2>
+      <div className="flex justify-between">{["😞", "😐", "🙂", "😄", "🤩"].map((m, i) => <button key={m} onClick={() => setMood(i)} className={`flex size-14 items-center justify-center rounded-full text-2xl ${mood === i ? "bg-primary" : "bg-card"}`}>{tx(m)}</button>)}</div>
+      <div className="space-y-2">{["What surprised you?", "Did you meet anyone?", "Would you go again?"].map((q) => <div key={q} className="rounded-2xl bg-card p-4 text-sm">{tx(q)}</div>)}</div>
       <button onClick={() => setRec(!rec)} className={`flex w-full items-center justify-center gap-3 rounded-full py-5 font-bold ${rec ? "bg-rose text-ink" : "bg-primary text-primary-foreground"}`}>
-        {rec ? <Mic className="size-5 animate-pulse" /> : <Play className="size-5" />}{rec ? t("Recording… tap to stop") : t("Answer with your voice")}
+        {rec ? <Mic className="size-5 animate-pulse" /> : <Play className="size-5" />}{rec ? tx("Recording… tap to stop") : tx("Answer with your voice")}
       </button>
     </div>
   );
@@ -474,7 +474,7 @@ const interests = [
 ];
 
 function MyMap() {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const [sel, setSel] = useState<string | null>(null);
   const total = interests.reduce((t, i) => t + i.v, 0);
   const R = 120, C = 150, gap = 19;
@@ -491,8 +491,8 @@ function MyMap() {
   const active = interests.find((i) => i.n === sel);
   return (
     <div className="space-y-5 pt-2">
-      <h2 className="font-display text-4xl font-black">{t("Insights")}</h2>
-      <p className="text-xs uppercase tracking-wider text-muted-foreground">{t("Your interest map")}</p>
+      <h2 className="font-display text-4xl font-black">{tx("Insights")}</h2>
+      <p className="text-xs uppercase tracking-wider text-muted-foreground">{tx("Your interest map")}</p>
       <div className="relative mx-auto size-[300px]">
         <svg viewBox="0 0 300 300" className="size-full">
           {segs.map((s) => (
@@ -503,20 +503,20 @@ function MyMap() {
           <span key={s.n} style={{ left: s.mid[0], top: s.mid[1] }} className="pointer-events-none absolute flex -translate-x-1/2 -translate-y-1/2 text-ink"><s.I className="size-5" /></span>
         ))}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <p className="font-display text-6xl font-black">{active ? `${Math.round((active.v / total) * 100)}%` : t("6")}</p>
-          <p className="text-xs text-muted-foreground">{t(active ? active.n : "interests discovered")}</p>
+          <p className="font-display text-6xl font-black">{active ? `${Math.round((active.v / total) * 100)}%` : tx("6")}</p>
+          <p className="text-xs text-muted-foreground">{tx(active ? active.n : "interests discovered")}</p>
         </div>
       </div>
       <div className="flex justify-center gap-2">
-        <button className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">{t("Find more like this")}</button>
-        <button className="rounded-full bg-muted px-4 py-2 text-sm">{t("Try a wildcard")}</button>
+        <button className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">{tx("Find more like this")}</button>
+        <button className="rounded-full bg-muted px-4 py-2 text-sm">{tx("Try a wildcard")}</button>
       </div>
       <div className="space-y-3 rounded-3xl bg-card p-4">
         {interests.map((i) => (
           <button key={i.n} onClick={() => setSel(i.n === sel ? null : i.n)} className="flex w-full items-center gap-3 text-left">
             <span className={`flex size-9 items-center justify-center rounded-full text-ink ${i.bg}`}><i.I className="size-4" /></span>
-            <div className="flex-1"><p className="text-sm font-bold">{t(i.n)}</p><div className="mt-1 h-1.5 rounded-full bg-muted"><div className={`h-1.5 rounded-full ${i.bg}`} style={{ width: `${(i.v / 30) * 100}%` }} /></div></div>
-            <b className="font-display">{Math.round((i.v / total) * 100)}{t("%")}</b>
+            <div className="flex-1"><p className="text-sm font-bold">{tx(i.n)}</p><div className="mt-1 h-1.5 rounded-full bg-muted"><div className={`h-1.5 rounded-full ${i.bg}`} style={{ width: `${(i.v / 30) * 100}%` }} /></div></div>
+            <b className="font-display">{Math.round((i.v / total) * 100)}{tx("%")}</b>
           </button>
         ))}
       </div>
@@ -525,17 +525,17 @@ function MyMap() {
 }
 
 function Journal() {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const months = [["October", "12 moments", river], ["September", "9 moments", park], ["August", "15 moments", oldtown]] as const;
   return (
     <div className="space-y-3 pt-2">
-      <h2 className="font-display text-4xl font-black">{t("2026")}</h2>
+      <h2 className="font-display text-4xl font-black">{tx("2026")}</h2>
       {months.map(([m, n, img]) => (
         <div key={m} className="relative h-48 overflow-hidden rounded-3xl">
           <img src={img} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
           <div className="scrim absolute inset-0" />
-          <span className="absolute left-4 top-4 rounded-full border border-foreground/40 px-3 py-1 text-xs backdrop-blur">{t(n)}</span>
-          <p className="absolute -bottom-3 left-3 font-display text-6xl font-black tracking-tight opacity-90">{t(m)}</p>
+          <span className="absolute left-4 top-4 rounded-full border border-foreground/40 px-3 py-1 text-xs backdrop-blur">{tx(n)}</span>
+          <p className="absolute -bottom-3 left-3 font-display text-4xl font-black opacity-90">{tx(m)}</p>
         </div>
       ))}
     </div>
@@ -543,7 +543,7 @@ function Journal() {
 }
 
 function Hints() {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const hints = [
     ["One idea, not a feed", "On Quest, a single card lowers decision fatigue for anxious or low-energy users."],
     ["Energy check-in", "Ask “how much energy today?” and scale ideas from a 10-min bench sit to a meetup."],
@@ -555,8 +555,8 @@ function Hints() {
   ];
   return (
     <section className="space-y-3 lg:pt-6">
-      <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">{t("Concept hints")}</p>
-      {hints.map(([t, d]) => <div key={t} className="rounded-2xl border bg-card p-4"><p className="font-display font-extrabold">{t(t)}</p><p className="text-sm text-muted-foreground">{t(d)}</p></div>)}
+      <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">{tx("Concept hints")}</p>
+      {hints.map(([t, d]) => <div key={t} className="rounded-2xl border bg-card p-4"><p className="font-display font-extrabold">{tx(t)}</p><p className="text-sm text-muted-foreground">{tx(d)}</p></div>)}
     </section>
   );
 }
@@ -569,7 +569,7 @@ const weeks = [
 ];
 
 function Insights() {
-  const { t, language } = useLanguage();
+  const { t: tx, language } = useLanguage();
   const [w, setW] = useState(0);
   const wk = weeks[w];
   if (!wk) return null;
@@ -577,35 +577,35 @@ function Insights() {
   return (
     <div className="space-y-4 pt-2">
       <MyMap />
-      <p className="pt-4 text-xs uppercase tracking-wider text-muted-foreground">{t("Weekly review")}</p>
-      <p className="text-sm text-muted-foreground">{t("Your weekly review: where you went and what to try next, built from your visits, ratings and notes.")}</p>
+      <p className="pt-4 text-xs uppercase tracking-wider text-muted-foreground">{tx("Weekly review")}</p>
+      <p className="text-sm text-muted-foreground">{tx("Your weekly review: where you went and what to try next, built from your visits, ratings and notes.")}</p>
       <div className="flex gap-2 rounded-2xl border border-primary/30 bg-primary/10 p-3 text-xs">
         <Sparkles className="size-4 shrink-0 text-primary" />
-        <p><b>{t("How it works.")}</b> {t(" Simple counts on your phone — it doesn't judge your mood or wellbeing.")}</p>
+        <p><b>{tx("How it works.")}</b> {tx(" Simple counts on your phone — it doesn't judge your mood or wellbeing.")}</p>
       </div>
       <div className="flex items-center justify-between">
         <button disabled={w === weeks.length - 1} onClick={() => setW(w + 1)} className="flex size-10 items-center justify-center rounded-full bg-muted disabled:opacity-30"><ChevronLeft className="size-5" /></button>
-        <div className="text-center"><p className="font-bold">{t(wk.label)}</p><p className="text-xs text-primary">{t(wk.sub)}</p></div>
+        <div className="text-center"><p className="font-bold">{tx(wk.label)}</p><p className="text-xs text-primary">{tx(wk.sub)}</p></div>
         <button disabled={w === 0} onClick={() => setW(w - 1)} className="flex size-10 items-center justify-center rounded-full bg-muted disabled:opacity-30"><ChevronRight className="size-5" /></button>
       </div>
       <div className="grid grid-cols-4 gap-2 text-center">
-        {wk.stats.map(([a, b]) => <div key={b} className="rounded-2xl bg-card p-2.5"><b className="block font-display text-xl">{t(a)}</b><span className="text-[9px] uppercase tracking-wider text-muted-foreground">{t(b)}</span></div>)}
+        {wk.stats.map(([a, b]) => <div key={b} className="rounded-2xl bg-card p-2.5"><b className="block font-display text-xl">{tx(a)}</b><span className="break-words text-[9px] uppercase text-muted-foreground">{tx(b)}</span></div>)}
       </div>
-      <div className="flex items-center justify-between text-xs text-muted-foreground"><span>{t("Built from ")}{wk.stats[0]?.[0]} {t(" visits")}</span><button className="flex items-center gap-1 font-bold text-primary"><RefreshCw className="size-3" />{t("Refresh")}</button></div>
+      <div className="flex items-center justify-between text-xs text-muted-foreground"><span>{tx("Built from ")}{wk.stats[0]?.[0]} {tx(" visits")}</span><button className="flex items-center gap-1 font-bold text-primary"><RefreshCw className="size-3" />{tx("Refresh")}</button></div>
       <div className="space-y-3 rounded-3xl bg-card p-4">
-        <div className="flex items-center gap-2"><span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground"><MapPin className="size-4" /></span><h3 className="font-display text-lg font-black">{t("Where you went")}</h3></div>
+        <div className="flex items-center gap-2"><span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground"><MapPin className="size-4" /></span><h3 className="font-display text-lg font-black">{tx("Where you went")}</h3></div>
         {wk.d.map(([n, c]) => (
           <div key={n} className="flex items-center gap-2 text-xs">
-            <span className="w-24 text-muted-foreground">{t(n)}</span>
+            <span className="w-24 text-muted-foreground">{tx(n)}</span>
             <div className="h-2 flex-1 rounded-full bg-muted"><div className="h-2 rounded-full bg-primary" style={{ width: `${(c / max) * 100}%` }} /></div>
-            <b className="w-3">{t(c)}</b>
+            <b className="w-3">{tx(c)}</b>
           </div>
         ))}
-        <ul className="list-disc space-y-1 pl-4 text-sm">{wk.notes.map((n) => <li key={n}>{t(n)}</li>)}</ul>
+        <ul className="list-disc space-y-1 pl-4 text-sm">{wk.notes.map((n) => <li key={n}>{tx(n)}</li>)}</ul>
       </div>
       <div className="space-y-2 rounded-3xl bg-card p-4">
-        <div className="flex items-center gap-2"><span className="flex size-9 items-center justify-center rounded-xl bg-sun text-ink"><Lightbulb className="size-4" /></span><h3 className="font-display text-lg font-black">{t("Try next")}</h3></div>
-        {["You haven't been to Wola yet — library meetup Thu 17:30", "Loved jazz? Concert in Łazienki on Sunday", "Rainy Saturday — try the pool instead of a run"].map((t) => <p key={t} className="rounded-2xl bg-muted p-3 text-sm">{t(t)}</p>)}
+        <div className="flex items-center gap-2"><span className="flex size-9 items-center justify-center rounded-xl bg-sun text-ink"><Lightbulb className="size-4" /></span><h3 className="font-display text-lg font-black">{tx("Try next")}</h3></div>
+        {["You haven't been to Wola yet — library meetup Thu 17:30", "Loved jazz? Concert in Łazienki on Sunday", "Rainy Saturday — try the pool instead of a run"].map((t) => <p key={t} className="rounded-2xl bg-muted p-3 text-sm">{tx(t)}</p>)}
       </div>
     </div>
   );
