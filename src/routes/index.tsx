@@ -120,7 +120,7 @@ function Onboarding({ done }: { done: () => void }) {
     { q: "What do you want more of?", hint: "Your goal for the next weeks.", opts: ["Calm", "Movement", "New people", "Culture", "Nature", "Confidence", "Routine", "Creativity"] },
     { q: "How are you feeling lately?", hint: "Only you see this. It helps us pace ideas.", opts: ["Great", "Okay", "A bit low", "Stressed", "Lonely", "Tired"] },
     { q: "How social do you feel?", hint: "We'll match the crowd size.", opts: ["Quiet & solo", "Small groups", "Big events are fine", "Surprise me"] },
-    { q: "Who's coming with you?", hint: "Pick adult or family events.", opts: ["Just me", "Partner", "Friends", "Kids — family events", "My dog"] },
+    { q: "Who's coming with you?", hint: "Pick adult or family events.", opts: ["Just me", "Partner", "Friends", "Kids — family events"] },
     { q: "When are you free?", hint: "Choose all that fit.", opts: ["Weekday mornings", "Weekday evenings", "Weekends", "Lunch breaks", "Anytime"] },
     { q: "How many ideas per week?", hint: "Start small — you can change it later.", opts: ["1–2", "3–4", "5+"] },
     { q: "What's your budget?", hint: "Many city events are free.", opts: ["Free only", "Up to 30 zł", "Up to 100 zł", "No limit"] },
