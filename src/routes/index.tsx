@@ -4,6 +4,7 @@ import { useLanguage } from "@/lib/language";
 import { LanguageChoice } from "@/components/language-choice";
 import { LanguageSettings } from "@/components/language-settings";
 import { ProfileMenu, type ProfileAnswer } from "@/components/profile-menu";
+import { WeekTimeline } from "@/components/week-timeline";
 import {
   UserRound, Settings, Home, Map as MapIcon, CalendarDays, Sparkles, Smile, Check, X, Camera, Mic, MessageCircle,
   MapPin, Clock, ThumbsUp, ThumbsDown, Play, Plus, Minus, Search, SlidersHorizontal, ChevronLeft,
@@ -382,9 +383,10 @@ function CalendarScreen({ ctx }: { ctx: Ctx }) {
       <div className="flex items-center justify-between pt-2">
         <h2 className="font-display text-4xl font-black">{tx("October")}</h2>
         <div className="flex rounded-full bg-muted p-1">
-          {([["week", List], ["month", Grid3x3]] as const).map(([v, I]) => <button key={v} onClick={() => setView(v)} className={`flex size-9 items-center justify-center rounded-full ${view === v ? "bg-primary text-primary-foreground" : ""}`}><I className="size-4" /></button>)}
+          {([["week", List], ["month", Grid3x3]] as const).map(([v, I]) => <Button key={v} variant="ghost" aria-label={tx(v === "week" ? "Week" : "Month")} title={tx(v === "week" ? "Week" : "Month")} onClick={() => setView(v)} className={`flex size-9 items-center justify-center rounded-full p-0 ${view === v ? "bg-primary text-primary-foreground" : ""}`}><I className="size-4" /></Button>)}
         </div>
       </div>
+      {view === "week" ? <WeekTimeline days={days} events={events} selected={sel} select={setSel} planned={ctx.planned} toggle={ctx.toggle} move={(direction) => setSel(Math.max(1, Math.min(31, sel + direction * 7)))} /> : <>
       <div className="grid grid-cols-7 gap-1 text-center text-[10px] text-muted-foreground">{(language === "pl" ? ["Pn", "Wt", "Śr", "Cz", "Pt", "So", "Nd"] : language === "ru" ? ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] : ["M", "T", "W", "T", "F", "S", "S"]).map((d, i) => <span key={i}>{tx(d)}</span>)}</div>
       <div className="grid grid-cols-7 gap-1">
         {view === "month" && Array.from({ length: firstOffset }).map((_, i) => <div key={"e" + i} />)}
