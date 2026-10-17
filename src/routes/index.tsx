@@ -9,7 +9,8 @@ import park from "@/assets/park.jpg";
 import oldtown from "@/assets/oldtown.jpg";
 import pool from "@/assets/pool.jpg";
 import river from "@/assets/river.jpg";
-import warsawArt from "@/assets/warsaw-illustration.jpg";
+import warsawLogo from "@/assets/warsaw-logo.png";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -132,20 +133,15 @@ function Onboarding({ done }: { done: () => void }) {
   ];
   if (step < 0)
     return (
-      <div className="flex h-full min-h-0 flex-col bg-[rgb(25,59,42)]">
-        <div className="relative min-h-0 flex-1 overflow-hidden">
-          <img src={warsawArt} alt="Illustration of Warsaw: Palace of Culture, Syrenka and the Vistula" className="absolute inset-0 h-full w-full object-cover object-center" />
-          <p className="absolute left-6 top-12 text-sm font-medium tracking-wide text-foreground/80">Cześć 👋</p>
+      <div className="flex h-full min-h-0 flex-col bg-welcome px-7 pb-10 pt-14 text-foreground">
+        <div className="flex min-h-0 flex-1 items-center justify-center">
+          <img src={warsawLogo} alt="Logo Warszawy — Pałac Kultury i Wisła" width={1024} height={1024} className="size-52 object-contain" />
         </div>
-        <div className="shrink-0 space-y-5 px-6 pb-8 pt-4">
-          <div className="space-y-1">
-            <p className="text-base text-foreground/80">Zwolnij i</p>
-            <h2 className="font-display text-[clamp(1.6rem,7vw,2rem)] font-extrabold leading-tight text-balance">odkryj swoją Warszawę</h2>
-          </div>
-          <button onClick={() => setStep(0)} className="flex w-full items-center gap-3 rounded-full bg-card p-2">
-            <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"><ChevronsRight className="size-5" /></span>
-            <span className="flex-1 pr-12 text-center font-bold">Poznajmy się</span>
-          </button>
+        <div className="shrink-0 pb-5 text-center">
+          <h2 className="font-display text-3xl font-semibold leading-snug">Zwolnij i odkryj<br />swoją Warszawę</h2>
+          <Button onClick={() => setStep(0)} className="mt-12 h-14 w-full rounded-full text-base font-bold">
+            Poznajmy się <ChevronRight className="ml-2 size-5" />
+          </Button>
         </div>
       </div>
     );

@@ -9,6 +9,7 @@
   --font-sans: "DM Sans", sans-serif;
   --color-rose: var(--rose);
   --color-violet: var(--violet);
+  --color-welcome: var(--welcome);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -43,6 +44,7 @@
 
 :root {
   --radius: 1.25rem;
+  --welcome: oklch(0.29 0.045 155);
   --background: oklch(0.16 0.012 150);
   --foreground: oklch(0.96 0.01 120);
   --card: oklch(0.22 0.015 150);
