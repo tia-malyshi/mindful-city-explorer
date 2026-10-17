@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trees, Dumbbell, Music, Users, Coffee, Lightbulb, ChevronRight, MapPin, Star, Shuffle } from "lucide-react";
+import { Trees, Dumbbell, Music, Users, Coffee, Lightbulb, ChevronRight, MapPin, Shuffle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language";
 import { profileInterests } from "@/lib/profile-interests";
