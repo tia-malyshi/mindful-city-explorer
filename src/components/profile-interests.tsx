@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trees, Dumbbell, Music, Users, Coffee, Lightbulb, ChevronRight, MapPin, Star, Shuffle } from "lucide-react";
+import { Trees, Dumbbell, Music, Users, Coffee, Lightbulb, ChevronRight, MapPin, Shuffle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language";
 import { profileInterests } from "@/lib/profile-interests";
@@ -7,6 +7,7 @@ import type { ProfileAnswer } from "@/components/profile-menu";
 import type { ReflectionRow, MediaRow } from "@/lib/personal-data";
 import { ReflectionSource } from "@/components/memories-screen";
 import { generateSampleProfile } from "@/lib/sample-profile";
+import { InterestMindMap } from "@/components/interest-mind-map";
 
 const icons = [Trees, Dumbbell, Music, Users, Coffee, Lightbulb];
 const tones = {
@@ -42,7 +43,6 @@ export function ProfileInterests({ answers, reflections: savedReflections = [], 
     const a = point(start), b = point(end);
     return { ...group, path: `M ${a[0]} ${a[1]} A 102 102 0 ${end - start > 180 ? 1 : 0} 1 ${b[0]} ${b[1]}` };
   });
-  const shown = groups.filter(group => unexplored || group.weight > 0);
   return <div className="space-y-7">
     <div className="space-y-3 border-y py-3">
       <div className="flex flex-wrap gap-2"><Button size="sm" variant={sampleMode ? "default" : "outline"} aria-pressed={sampleMode} onClick={() => { setSampleMode(true); setSourceId(null); }}>{t("Sample activities")}</Button><Button size="sm" variant={!sampleMode ? "default" : "outline"} aria-pressed={!sampleMode} onClick={() => { setSampleMode(false); setSourceId(null); }}>{t("My saved activities")}</Button></div>
@@ -68,13 +68,7 @@ export function ProfileInterests({ answers, reflections: savedReflections = [], 
     </section>
     <section className="border-t pt-6" aria-label={t("Mind map")}>
       <div className="mb-4 space-y-2"><h3 className="font-display text-xl font-semibold">{t("Mind map")}</h3><Button variant="link" size="sm" aria-pressed={unexplored} onClick={() => setUnexplored(!unexplored)} className="h-auto max-w-full justify-start whitespace-normal px-0 text-left text-xs text-primary">{t(unexplored ? "Hide unexplored interests" : "Show unexplored interests")}</Button></div>
-      <span className="inline-flex rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">{t("You")}</span>
-      <div className="ml-5 border-l border-muted-foreground/40 py-2">{shown.filter(group => !active || active === group.name).map(group => <div key={group.name} className="relative py-3 pl-5 before:absolute before:left-0 before:top-7 before:w-4 before:border-t before:border-muted-foreground/40">
-        <h4 className={`inline-flex rounded-full border px-3 py-1 text-sm font-semibold ${tones[group.tone].text} ${tones[group.tone].border} ${group.weight ? "" : "border-dashed"}`}>{t(group.name)}</h4>
-        <div className="ml-3 mt-2 space-y-2 border-l pl-3">{(unexplored ? group.values : group.selected).map(value => <div key={value} className={`text-sm ${group.selected.includes(value) ? "text-foreground" : "text-muted-foreground"}`}>{t(value)}</div>)}
-          {group.events.map(event => <div key={event.id}><Button variant="ghost" aria-expanded={sourceId === event.id} className="h-auto w-full justify-start whitespace-normal px-0 text-left text-xs" onClick={() => setSourceId(sourceId === event.id ? null : event.id)}><Star className={`size-3 shrink-0 ${tones[group.tone].text}`} />{t(event.event_title)}<ChevronRight className="ml-auto size-3 shrink-0" /></Button>{sourceId === event.id && <ReflectionSource reflection={event} />}</div>)}
-        </div>
-      </div>)}</div>
+      <InterestMindMap groups={groups} active={active} setActive={setActive} unexplored={unexplored} sourceId={sourceId} setSourceId={setSourceId} />
       {!total && !unexplored && <p className="mt-3 text-sm text-muted-foreground">{t("No interests selected yet")}</p>}
     </section>
     <section className="border-t pt-6" aria-label={t("Your activities")}>
