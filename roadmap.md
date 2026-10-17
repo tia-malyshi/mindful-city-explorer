@@ -7,9 +7,10 @@
 - [x] Make Home daily suggestions, split interests and Insights, and keep four bottom tabs.
 - [x] Add profile access with questionnaire data, settings, and a working invitation share action.
 - [x] Verify updated navigation and profile flow.
-- [ ] Move interests into profile and add Reflection as the fourth-menu replacement.
-- [ ] Add personal accounts and private persisted profile data.
-- [ ] Save ratings, quest photos and text/voice reflection answers.
-- [ ] Assemble photo memories with original reflection sources.
-- [ ] Verify signed-in saving, read-back, voice, privacy and existing navigation.
-- [ ] Make the bottom Reflection button and its feedback/memories choices visibly accessible.
+- [x] Move interests into profile and add Reflection as the fourth-menu replacement.
+- [x] Add personal accounts and private persisted profile data.
+- [x] Implement saving ratings, quest photos and text/voice reflection answers.
+- [x] Assemble photo memories with original reflection sources and group them by month.
+- [ ] Verify signed-in saving and read-back with real media — blocked until the first user signs in or confirms a personal MojaWawa account.
+- [x] Verify public navigation, reflection calculations, recording lifecycle and private-data policies.
+- [x] Make the bottom Reflection button and its feedback/memories choices visibly accessible.

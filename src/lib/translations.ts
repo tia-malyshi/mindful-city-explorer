@@ -1,4 +1,5 @@
 export const translations: Record<string, { pl: string; ru: string }> = {
+  "Calendar": { pl: "Kalendarz", ru: "Календарь" },
   "Reflection": { pl: "Refleksja", ru: "Рефлексия" },
   "Experience": { pl: "Ocena", ru: "Отзыв" },
   "Memories": { pl: "Wspomnienia", ru: "Воспоминания" },

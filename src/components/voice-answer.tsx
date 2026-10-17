@@ -32,7 +32,7 @@ export function VoiceAnswer({ onRecorded, disabled }: { onRecorded: (blob: Blob)
         try { await onRecorded(new Blob(chunks, { type: next.mimeType })); } catch (e) { setError((e as Error).message ?? "Recording failed. Try again."); } finally { if (alive.current) setBusy(false); }
       };
       next.start(); setRecording(true);
-    } catch { setError("Microphone unavailable. Allow access or write your answer."); }
+    } catch { stream.current?.getTracks().forEach(track => track.stop()); setRecording(false); setError("Microphone unavailable. Allow access or write your answer."); }
   };
   return <div className="space-y-2"><Button variant={recording ? "destructive" : "outline"} disabled={busy || disabled} className="w-full" onClick={() => recording ? recorder.current?.stop() : void start()}>{recording ? <Square className="size-4" /> : <Mic className="size-4" />}{t(busy ? "Saving…" : recording ? "Stop recording" : "Answer with your voice")}</Button>{error && <p role="alert" className="text-sm text-destructive">{t(error)}</p>}</div>;
 }
