@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   Home, Map as MapIcon, CalendarDays, Sparkles, Smile, Check, X, Camera, Mic, MessageCircle,
   MapPin, Clock, ThumbsUp, ThumbsDown, Play, Plus, Minus, Search, SlidersHorizontal, ChevronLeft,
-  ChevronRight, ChevronsRight, List, Grid3x3,
+  ChevronRight, ChevronsRight, List, Grid3x3, Lightbulb, RefreshCw,
 } from "lucide-react";
 import park from "@/assets/park.jpg";
 import oldtown from "@/assets/oldtown.jpg";
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Tab = "onboard" | "feed" | "all" | "calendar" | "quest" | "feedback" | "mymap" | "journal";
+type Tab = "onboard" | "feed" | "all" | "calendar" | "quest" | "feedback" | "mymap" | "journal" | "insights";
 
 type Ev = { id: number; t: string; c: Cat; src: string; day: number; time: string; district: string; km: number; aud: "Adults" | "Family" | "All ages"; free: boolean; img: string };
 type Cat = "Nature" | "Sport" | "Culture" | "Social";
@@ -54,7 +54,7 @@ function Index() {
   const toggle = (id: number) => setPlanned((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   const ctx = { filters, setFilters, planned, toggle, setTab };
 
-  const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "1 · Warszawa"], ["all", "All events + filters"], ["calendar", "2 · Calendar"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["mymap", "6 · My map"], ["journal", "Monthly story"]];
+  const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "1 · Warszawa"], ["all", "All events + filters"], ["calendar", "2 · Calendar"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["mymap", "6 · My map"], ["journal", "Monthly story"], ["insights", "Insights"]];
 
   return (
     <main className="min-h-screen px-6 py-10 lg:py-14">
@@ -93,10 +93,11 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
           {tab === "feedback" && <Feedback />}
           {tab === "mymap" && <MyMap />}
           {tab === "journal" && <Journal />}
+          {tab === "insights" && <Insights />}
         </div>
         {!full && (
           <div className="absolute inset-x-4 bottom-5 flex justify-between rounded-full border bg-card/90 p-1.5 backdrop-blur">
-            {([["feed", Home], ["calendar", CalendarDays], ["quest", Sparkles], ["feedback", Smile], ["mymap", MapIcon]] as const).map(([t, I]) => {
+            {([["feed", Home], ["calendar", CalendarDays], ["quest", Sparkles], ["feedback", Smile], ["mymap", MapIcon], ["insights", Lightbulb]] as const).map(([t, I]) => {
               const on = tab === t || (t === "feed" && tab === "all");
               return (
                 <button key={t} onClick={() => ctx.setTab(t)} className={`flex h-12 flex-1 items-center justify-center rounded-full transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
@@ -436,5 +437,52 @@ function Hints() {
       <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">Concept hints</p>
       {hints.map(([t, d]) => <div key={t} className="rounded-2xl border bg-card p-4"><p className="font-display font-extrabold">{t}</p><p className="text-sm text-muted-foreground">{d}</p></div>)}
     </section>
+  );
+}
+
+const weeks = [
+  { label: "Oct 12 – 18", sub: "This week", stats: [["4", "events"], ["4.3", "avg rating"], ["25 zł", "spent"], ["3", "districts"]], d: [["Śródmieście", 2], ["Praga-Północ", 1], ["Mokotów", 1]] as [string, number][],
+    notes: ["Mix: Sport ×2, Nature and Music.", "Mostly mornings (2 of 4).", "Out on Mon, Wed, Thu, Fri — about 8 h total.", "You talked to 2 new people. 👋"] },
+  { label: "Oct 5 – 11", sub: "Last week", stats: [["2", "events"], ["3.5", "avg rating"], ["0 zł", "spent"], ["1", "districts"]], d: [["Mokotów", 2]] as [string, number][],
+    notes: ["Only Nature this week.", "Both in the evening.", "Quieter week — that's okay."] },
+];
+
+function Insights() {
+  const [w, setW] = useState(0);
+  const wk = weeks[w]!;
+  const max = Math.max(...wk.d.map(([, n]) => n));
+  return (
+    <div className="space-y-4 pt-2">
+      <h2 className="font-display text-4xl font-black">Insights</h2>
+      <p className="text-sm text-muted-foreground">Your weekly review: where you went and what to try next, built from your visits, ratings and notes.</p>
+      <div className="flex gap-2 rounded-2xl border border-primary/30 bg-primary/10 p-3 text-xs">
+        <Sparkles className="size-4 shrink-0 text-primary" />
+        <p><b>How it works.</b> Simple counts on your phone — it doesn't judge your mood or wellbeing.</p>
+      </div>
+      <div className="flex items-center justify-between">
+        <button disabled={w === weeks.length - 1} onClick={() => setW(w + 1)} className="flex size-10 items-center justify-center rounded-full bg-muted disabled:opacity-30"><ChevronLeft className="size-5" /></button>
+        <div className="text-center"><p className="font-bold">{wk.label}</p><p className="text-xs text-primary">{wk.sub}</p></div>
+        <button disabled={w === 0} onClick={() => setW(w - 1)} className="flex size-10 items-center justify-center rounded-full bg-muted disabled:opacity-30"><ChevronRight className="size-5" /></button>
+      </div>
+      <div className="grid grid-cols-4 gap-2 text-center">
+        {wk.stats.map(([a, b]) => <div key={b} className="rounded-2xl bg-card p-2.5"><b className="block font-display text-xl">{a}</b><span className="text-[9px] uppercase tracking-wider text-muted-foreground">{b}</span></div>)}
+      </div>
+      <div className="flex items-center justify-between text-xs text-muted-foreground"><span>Built from {wk.stats[0]![0]} visits</span><button className="flex items-center gap-1 font-bold text-primary"><RefreshCw className="size-3" />Refresh</button></div>
+      <div className="space-y-3 rounded-3xl bg-card p-4">
+        <div className="flex items-center gap-2"><span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground"><MapPin className="size-4" /></span><h3 className="font-display text-lg font-black">Where you went</h3></div>
+        {wk.d.map(([n, c]) => (
+          <div key={n} className="flex items-center gap-2 text-xs">
+            <span className="w-24 text-muted-foreground">{n}</span>
+            <div className="h-2 flex-1 rounded-full bg-muted"><div className="h-2 rounded-full bg-primary" style={{ width: `${(c / max) * 100}%` }} /></div>
+            <b className="w-3">{c}</b>
+          </div>
+        ))}
+        <ul className="list-disc space-y-1 pl-4 text-sm">{wk.notes.map((n) => <li key={n}>{n}</li>)}</ul>
+      </div>
+      <div className="space-y-2 rounded-3xl bg-card p-4">
+        <div className="flex items-center gap-2"><span className="flex size-9 items-center justify-center rounded-xl bg-sun text-ink"><Lightbulb className="size-4" /></span><h3 className="font-display text-lg font-black">Try next</h3></div>
+        {["You haven't been to Wola yet — library meetup Thu 17:30", "Loved jazz? Concert in Łazienki on Sunday", "Rainy Saturday — try the pool instead of a run"].map((t) => <p key={t} className="rounded-2xl bg-muted p-3 text-sm">{t}</p>)}
+      </div>
+    </div>
   );
 }
