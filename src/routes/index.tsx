@@ -124,7 +124,7 @@ function Onboarding({ done }: { done: () => void }) {
     { q: "When are you free?", hint: "Choose all that fit.", opts: ["Weekday mornings", "Weekday evenings", "Weekends", "Lunch breaks", "Anytime"] },
     { q: "How many ideas per week?", hint: "Start small — you can change it later.", opts: ["1–2", "3–4", "5+"] },
     { q: "What's your budget?", hint: "Many city events are free.", opts: ["Free only", "Up to 30 zł", "Up to 100 zł", "No limit"] },
-    { q: "Where do you live?", hint: "To show what's near you.", opts: ["Śródmieście", "Mokotów", "Wola", "Praga", "Ursynów", "Bielany", "Other"] },
+    { q: "Where do you live?", hint: "To show what's near you.", opts: ["Bemowo", "Białołęka", "Bielany", "Mokotów", "Ochota", "Praga-Południe", "Praga-Północ", "Rembertów", "Śródmieście", "Targówek", "Ursus", "Ursynów", "Wawer", "Wesoła", "Wilanów", "Włochy", "Wola", "Żoliborz", "Outside Warsaw"] },
     { q: "How far are you up for?", hint: "By foot, bike or public transport.", opts: ["My neighbourhood", "Up to 30 min", "All of Warsaw"] },
     { q: "Anything we should know?", hint: "Optional — helps pick fitting places.", opts: ["Step-free access", "Quiet places", "Polish not needed", "No alcohol", "None"] },
   ];
