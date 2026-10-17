@@ -32,6 +32,8 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Mental-health friendly city exploration app prototype built on Warsaw Open Data." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:image", content: warsawPhoto.url },
+      { name: "twitter:image", content: warsawPhoto.url },
     ],
   }),
   component: Index,
@@ -117,7 +119,7 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
       <div className="relative h-[780px] overflow-hidden rounded-[2.6rem]">
         {!full && <Button variant="ghost" size="icon" title={language === "pl" ? "Ustawienia" : language === "ru" ? "Настройки" : "Settings"} aria-label={language === "pl" ? "Ustawienia" : language === "ru" ? "Настройки" : "Settings"} onClick={() => setSettingsOpen(true)} className="absolute right-5 top-6 z-10 rounded-full bg-card"><Settings className="size-4" /></Button>}
         {!full && <Button variant="ghost" size="icon" title={tx("Profile")} aria-label={tx("Profile")} onClick={() => setProfileOpen(true)} className="absolute right-16 top-6 z-10 rounded-full bg-card"><UserRound className="size-4" /></Button>}
-        {profileOpen && <ProfileMenu close={() => setProfileOpen(false)} settings={() => { setProfileOpen(false); setSettingsOpen(true); }} quest={() => { setProfileOpen(false); ctx.setTab("quest"); }} interests={() => { setProfileOpen(false); ctx.setTab("mymap"); }} account={<AccountPanel />} {...(personal.user ? { save: () => personal.saveProfile(ctx.name, ctx.answers) } : {})} answers={ctx.answers} name={ctx.name} setName={ctx.setName} />}
+        {profileOpen && <ProfileMenu close={() => setProfileOpen(false)} settings={() => { setProfileOpen(false); setSettingsOpen(true); }} quest={() => { setProfileOpen(false); ctx.setTab("quest"); }} account={<AccountPanel />} {...(personal.user ? { save: () => personal.saveProfile(ctx.name, ctx.answers) } : {})} answers={ctx.answers} name={ctx.name} setName={ctx.setName} reflections={personal.data.reflections} media={personal.data.media} loading={personal.loading} error={!!personal.error} />}
         {settingsOpen && <LanguageSettings close={() => setSettingsOpen(false)} />}
         {!full && <div className="flex justify-between px-7 pt-3 text-xs font-bold"><span>{tx("9:41")}</span><span>{tx("5G ▮▮▮")}</span></div>}
         <div className={`no-scrollbar h-full overflow-y-auto ${full ? "" : "px-5 pb-28 pt-12"}`}>

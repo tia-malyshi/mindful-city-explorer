@@ -5,6 +5,7 @@ import { useLanguage } from "@/lib/language";
 import { profileInterests } from "@/lib/profile-interests";
 import type { ProfileAnswer } from "@/components/profile-menu";
 import type { ReflectionRow, MediaRow } from "@/lib/personal-data";
+import { ReflectionSource } from "@/components/memories-screen";
 
 const icons = [Trees, Dumbbell, Music, Users, Coffee, Lightbulb];
 const tones = {
@@ -16,12 +17,13 @@ const tones = {
   violet: { stroke: "stroke-violet", text: "text-violet", border: "border-violet" },
 };
 
-export function ProfileInterests({ answers, reflections = [], media = [], openReflection }: {
-  answers: ProfileAnswer[]; reflections?: ReflectionRow[]; media?: MediaRow[]; openReflection?: (eventId: number) => void;
+export function ProfileInterests({ answers, reflections = [], media = [] }: {
+  answers: ProfileAnswer[]; reflections?: ReflectionRow[]; media?: MediaRow[];
 }) {
   const { t, language } = useLanguage();
   const [active, setActive] = useState<string | null>(null);
   const [unexplored, setUnexplored] = useState(false);
+  const [sourceId, setSourceId] = useState<string | null>(null);
   const groups = profileInterests(answers, reflections);
   const total = groups.reduce((sum, group) => sum + group.weight, 0);
   const selectedCount = groups.reduce((sum, group) => sum + group.selected.length, 0);
@@ -62,7 +64,7 @@ export function ProfileInterests({ answers, reflections = [], media = [], openRe
       <div className="ml-5 border-l border-muted-foreground/40 py-2">{shown.filter(group => !active || active === group.name).map(group => <div key={group.name} className="relative py-3 pl-5 before:absolute before:left-0 before:top-7 before:w-4 before:border-t before:border-muted-foreground/40">
         <h4 className={`inline-flex rounded-full border px-3 py-1 text-sm font-semibold ${tones[group.tone].text} ${tones[group.tone].border} ${group.weight ? "" : "border-dashed"}`}>{t(group.name)}</h4>
         <div className="ml-3 mt-2 space-y-2 border-l pl-3">{(unexplored ? group.values : group.selected).map(value => <div key={value} className={`text-sm ${group.selected.includes(value) ? "text-foreground" : "text-muted-foreground"}`}>{t(value)}</div>)}
-          {group.events.map(event => <Button key={event.id} variant="ghost" className="h-auto w-full justify-start whitespace-normal px-0 text-left text-xs" onClick={() => openReflection?.(reflections.find(item => item.id === event.id)?.event_id ?? 0)}><Star className={`size-3 shrink-0 ${tones[group.tone].text}`} />{t(event.event_title)}<ChevronRight className="ml-auto size-3 shrink-0" /></Button>)}
+          {group.events.map(event => <div key={event.id}><Button variant="ghost" aria-expanded={sourceId === event.id} className="h-auto w-full justify-start whitespace-normal px-0 text-left text-xs" onClick={() => setSourceId(sourceId === event.id ? null : event.id)}><Star className={`size-3 shrink-0 ${tones[group.tone].text}`} />{t(event.event_title)}<ChevronRight className="ml-auto size-3 shrink-0" /></Button>{sourceId === event.id && <ReflectionSource reflection={event} />}</div>)}
         </div>
       </div>)}</div>
       {!total && !unexplored && <p className="mt-3 text-sm text-muted-foreground">{t("No interests selected yet")}</p>}
@@ -73,7 +75,8 @@ export function ProfileInterests({ answers, reflections = [], media = [], openRe
         const photo = media.find(photo => photo.reflection_id === item.id && photo.kind === "photo");
         return <article key={item.id} className="rounded-lg border bg-card p-3">
           <div className="flex gap-3">{photo && <img src={photo.url} alt={t(item.event_title)} className="size-14 shrink-0 rounded-md object-cover" loading="lazy" />}<div className="min-w-0"><span className="text-xs text-sage">{t("Reviewed")}</span><h4 className="mt-1 text-sm font-semibold">{t(item.event_title)}</h4><p className="mt-2 flex flex-wrap items-center gap-1 text-xs text-muted-foreground"><MapPin className="size-3" />{item.district}<span>· {new Date(item.created_at).toLocaleDateString(language)}</span></p></div></div>
-          <div className="mt-3 flex items-center justify-between gap-2 border-t pt-2 text-xs"><span>{t("Rating")}: <strong className="text-primary">{item.rating}/5</strong></span><Button variant="link" className="h-auto whitespace-normal p-0 text-xs" onClick={() => openReflection?.(item.event_id)}>{t("See original information")}<ChevronRight className="size-3" /></Button></div>
+          <div className="mt-3 flex items-center justify-between gap-2 border-t pt-2 text-xs"><span>{t("Rating")}: <strong className="text-primary">{item.rating}/5</strong></span><Button variant="link" aria-expanded={sourceId === item.id} className="h-auto whitespace-normal p-0 text-xs" onClick={() => setSourceId(sourceId === item.id ? null : item.id)}>{t("See original information")}<ChevronRight className="size-3" /></Button></div>
+          {sourceId === item.id && <ReflectionSource reflection={item} />}
         </article>;
       })}</div>}
     </section>

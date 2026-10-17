@@ -17,3 +17,4 @@
 - Personal account state and private data share one root provider and one auth subscription; browser Data API access uses owner RLS and a private file bucket, keeping media outside the source bundle.
 - Reflections retain event metadata and media provenance; memories store original photo IDs and assemble existing photos without AI interpretation so sources remain inspectable.
 - Questionnaire completion presents the shared account panel before discovery; example Insights stays explicitly marked as sample data and keeps saved reflection sources separate so presentation never implies fabricated personal results.
+- Profile opens a focused interest overview derived from questionnaire choices and saved reflections; its connected branches and activity history expose original sources rather than fabricated personal events.
