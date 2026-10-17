@@ -5,13 +5,15 @@ import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/lib/language";
 
 export type ProfileAnswer = { question: string; values: string[] };
-export function ProfileMenu({ close, settings, quest, answers, name, setName }: {
+export function ProfileMenu({ close, settings, quest, interests, account, save, answers, name, setName }: {
   close: () => void; settings: () => void; quest: () => void;
+  interests?: () => void; account?: React.ReactNode; save?: () => Promise<void>;
   answers: ProfileAnswer[]; name: string; setName: (name: string) => void;
 }) {
   const { t } = useLanguage();
   const [invite, setInvite] = useState("");
   const [copied, setCopied] = useState(false);
+  const [saveState, setSaveState] = useState("");
   const share = async () => {
     const text = `${t("Explore Warsaw with me on MojaWawa")} — ${window.location.origin}`;
     try {
@@ -24,13 +26,17 @@ export function ProfileMenu({ close, settings, quest, answers, name, setName }: 
     <UserRound className="mb-6 size-12 text-primary" />
     <label htmlFor="profile-name" className="mb-2 block text-sm text-muted-foreground">{t("Name")}</label>
     <Input id="profile-name" value={name} onChange={(e) => setName(e.target.value)} placeholder={t("Not provided")} />
+    {save && <Button className="mt-3" onClick={async () => { try { await save(); setSaveState("Profile saved"); } catch (error) { setSaveState((error as Error).message); } }}>{t("Save profile")}</Button>}
+    {saveState && <p role="status" className="mt-2 text-sm text-primary">{t(saveState)}</p>}
     <div className="my-6 divide-y border-y">
       <Button variant="ghost" onClick={settings} className="h-14 w-full justify-start rounded-none px-0"><Settings />{t("Account settings")}<ChevronRight className="ml-auto" /></Button>
       <Button variant="ghost" onClick={share} className="h-14 w-full justify-start rounded-none px-0"><UserPlus />{t("Invite a friend")}<ChevronRight className="ml-auto" /></Button>
       <Button variant="ghost" onClick={quest} className="h-14 w-full justify-start rounded-none px-0"><Sparkles />{t("Quest")}<ChevronRight className="ml-auto" /></Button>
+      {interests && <Button variant="ghost" onClick={interests} className="h-14 w-full justify-start rounded-none px-0"><Sparkles />{t("My interests")}<ChevronRight className="ml-auto" /></Button>}
     </div>
     {copied && <p role="status" className="mb-5 text-sm text-primary">{t("Invitation copied")}</p>}
     {invite && <Input aria-label={t("Copy invitation")} readOnly value={invite} onFocus={(e) => e.target.select()} />}
+    {account && <div className="mb-6 border-b pb-6">{account}</div>}
     <h3 className="mb-4 font-display text-xl font-semibold">{t("Your answers")}</h3>
     {answers.length === 0 ? <p className="text-sm text-muted-foreground">{t("Not provided")}</p> : <dl className="divide-y">{answers.map((answer) => <div key={answer.question} className="py-4"><dt className="mb-1 text-sm text-muted-foreground">{t(answer.question)}</dt><dd className="text-sm">{answer.values.length ? answer.values.map(t).join(" · ") : t("Not provided")}</dd></div>)}</dl>}
   </div>;

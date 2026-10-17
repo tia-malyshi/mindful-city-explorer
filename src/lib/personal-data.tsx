@@ -57,7 +57,7 @@ function usePersonalState() {
     const path = `${userId}/${crypto.randomUUID()}`;
     const { error } = await supabase.storage.from("reflections").upload(path, file, { contentType: file.type });
     if (error) throw error;
-    const row = await supabase.from("reflection_media").insert({ user_id: userId, event_id: eventId, kind, origin, question, path }).select().single();
+    const row = await supabase.from("reflection_media").insert({ user_id: userId, event_id: eventId, kind, origin, question: question ?? null, path }).select().single();
     if (row.error) { await supabase.storage.from("reflections").remove([path]); throw row.error; }
     await refreshData();
     return row.data;

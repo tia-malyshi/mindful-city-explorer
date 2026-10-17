@@ -14,7 +14,7 @@ export function PersonalInsights() {
     <div className="space-y-3 border-y py-5">{categories.map(category => <div key={category} className="flex justify-between text-sm"><span>{t(category)}</span><b>{personal.data.reflections.filter(item => item.category === category).length}</b></div>)}{!stats.count && <p className="text-sm text-muted-foreground">{t("No saved experiences yet")}</p>}</div>
     <Button variant="outline" className="w-full" aria-expanded={sources} onClick={() => setSources(!sources)}>{t("See original information")}</Button>{sources && <div className="space-y-4"><h3 className="font-display text-xl font-semibold">{t("Your answers")}</h3>{Array.isArray(personal.data.profile?.answers) && personal.data.profile.answers.map((answer, index) => {
       if (!answer || typeof answer !== "object" || Array.isArray(answer)) return null;
-      return <div key={index} className="text-sm"><p className="text-xs text-muted-foreground">{t(String(answer.question ?? ""))}</p><p>{Array.isArray(answer.values) ? answer.values.map(value => t(String(value))).join(" · ") : ""}</p></div>;
+      return <div key={index} className="text-sm"><p className="text-xs text-muted-foreground">{t(String(answer['question'] ?? ""))}</p><p>{Array.isArray(answer['values']) ? answer['values'].map(value => t(String(value))).join(" · ") : ""}</p></div>;
     })}{personal.data.reflections.map(item => <ReflectionSource key={item.id} reflection={item} />)}</div>}
   </>}</div>;
 }

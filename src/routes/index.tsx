@@ -1,10 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/lib/language";
 import { LanguageChoice } from "@/components/language-choice";
 import { LanguageSettings } from "@/components/language-settings";
 import { ProfileMenu, type ProfileAnswer } from "@/components/profile-menu";
 import { WeekTimeline } from "@/components/week-timeline";
+import { usePersonalData } from "@/lib/personal-data";
+import { AccountPanel } from "@/components/account-panel";
+import { ReflectionScreen } from "@/components/reflection-screen";
+import { PersonalInsights } from "@/components/personal-insights";
+import { PhotoUpload } from "@/components/photo-upload";
 import {
   UserRound, Settings, Home, Map as MapIcon, CalendarDays, Sparkles, Smile, Check, X, Camera, Mic, MessageCircle,
   MapPin, Clock, ThumbsUp, ThumbsDown, Play, Plus, Minus, Search, SlidersHorizontal, ChevronLeft,
@@ -26,6 +31,8 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Mental-health friendly city exploration app prototype built on Warsaw Open Data." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:image", content: warsawPhoto.url },
+      { name: "twitter:image", content: warsawPhoto.url },
     ],
   }),
   component: Index,
@@ -56,13 +63,26 @@ const applyFilters = (f: Filters, q = "", t: (text: string) => string = (text) =
 
 function Index() {
   const { t: tx } = useLanguage();
+  const personal = usePersonalData();
   const [tab, setTab] = useState<Tab>("onboard");
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [planned, setPlanned] = useState<number[]>([1, 3]);
   const [answers, setAnswers] = useState<ProfileAnswer[]>([]);
   const [name, setName] = useState("");
+  const [reflectionEvent, setReflectionEvent] = useState(1);
+  const [profileError, setProfileError] = useState("");
+  useEffect(() => {
+    if (!personal.user) { setName(""); setAnswers([]); return; }
+    const profile = personal.data.profile;
+    if (!profile) return;
+    setName(profile.display_name);
+    if (Array.isArray(profile.answers)) setAnswers(profile.answers.flatMap(answer => {
+      if (!answer || typeof answer !== "object" || Array.isArray(answer) || typeof answer['question'] !== "string" || !Array.isArray(answer['values'])) return [];
+      return [{ question: answer['question'], values: answer['values'].filter((value): value is string => typeof value === "string") }];
+    }));
+  }, [personal.user?.id, personal.data.profile]);
   const toggle = (id: number) => setPlanned((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
-  const ctx = { filters, setFilters, planned, toggle, setTab, answers, setAnswers, name, setName };
+  const ctx = { filters, setFilters, planned, toggle, setTab, answers, setAnswers, name, setName, reflectionEvent, setReflectionEvent };
 
   const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "Daily suggestion"], ["all", "Event list"], ["map", "Map"], ["calendar", "2 · Calendar"], ["mymap", "My interests"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["insights", "Insights"], ["journal", "Monthly story"]];
 
@@ -86,10 +106,11 @@ function Index() {
   );
 }
 
-type Ctx = { filters: Filters; setFilters: (f: Filters) => void; planned: number[]; toggle: (id: number) => void; setTab: (t: Tab) => void; answers: ProfileAnswer[]; setAnswers: (answers: ProfileAnswer[]) => void; name: string; setName: (name: string) => void };
+type Ctx = { filters: Filters; setFilters: (f: Filters) => void; planned: number[]; toggle: (id: number) => void; setTab: (t: Tab) => void; answers: ProfileAnswer[]; setAnswers: (answers: ProfileAnswer[]) => void; name: string; setName: (name: string) => void; reflectionEvent: number; setReflectionEvent: (id: number) => void };
 
 function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
   const { t: tx, language } = useLanguage();
+  const personal = usePersonalData();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const full = tab === "onboard";
@@ -98,7 +119,7 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
       <div className="relative h-[780px] overflow-hidden rounded-[2.6rem]">
         {!full && <Button variant="ghost" size="icon" title={language === "pl" ? "Ustawienia" : language === "ru" ? "Настройки" : "Settings"} aria-label={language === "pl" ? "Ustawienia" : language === "ru" ? "Настройки" : "Settings"} onClick={() => setSettingsOpen(true)} className="absolute right-5 top-6 z-10 rounded-full bg-card"><Settings className="size-4" /></Button>}
         {!full && <Button variant="ghost" size="icon" title={tx("Profile")} aria-label={tx("Profile")} onClick={() => setProfileOpen(true)} className="absolute right-16 top-6 z-10 rounded-full bg-card"><UserRound className="size-4" /></Button>}
-        {profileOpen && <ProfileMenu close={() => setProfileOpen(false)} settings={() => { setProfileOpen(false); setSettingsOpen(true); }} quest={() => { setProfileOpen(false); ctx.setTab("quest"); }} answers={ctx.answers} name={ctx.name} setName={ctx.setName} />}
+        {profileOpen && <ProfileMenu close={() => setProfileOpen(false)} settings={() => { setProfileOpen(false); setSettingsOpen(true); }} quest={() => { setProfileOpen(false); ctx.setTab("quest"); }} interests={() => { setProfileOpen(false); ctx.setTab("mymap"); }} account={<AccountPanel />} {...(personal.user ? { save: () => personal.saveProfile(ctx.name, ctx.answers) } : {})} answers={ctx.answers} name={ctx.name} setName={ctx.setName} />}
         {settingsOpen && <LanguageSettings close={() => setSettingsOpen(false)} />}
         {!full && <div className="flex justify-between px-7 pt-3 text-xs font-bold"><span>{tx("9:41")}</span><span>{tx("5G ▮▮▮")}</span></div>}
         <div className={`no-scrollbar h-full overflow-y-auto ${full ? "" : "px-5 pb-28 pt-12"}`}>
@@ -107,16 +128,16 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
           {tab === "all" && <AllEvents ctx={ctx} />}
           {tab === "map" && <WarsawMap ctx={ctx} />}
           {tab === "calendar" && <CalendarScreen ctx={ctx} />}
-          {tab === "quest" && <Quest />}
-          {tab === "feedback" && <Feedback />}
+          {tab === "quest" && <Quest reflect={(id) => { ctx.setReflectionEvent(id); ctx.setTab("feedback"); }} />}
+          {tab === "feedback" && <ReflectionScreen events={events} eventId={ctx.reflectionEvent} setEventId={ctx.setReflectionEvent} />}
           {tab === "mymap" && <MyMap />}
-          {tab === "journal" && <Journal />}
-          {tab === "insights" && <Insights />}
+          {tab === "journal" && <ReflectionScreen events={events} eventId={ctx.reflectionEvent} setEventId={ctx.setReflectionEvent} initialMemories />}
+          {tab === "insights" && <PersonalInsights />}
         </div>
         {!full && (
           <div className="absolute inset-x-4 bottom-5 flex justify-between rounded-full border bg-card/90 p-1.5 backdrop-blur">
-            {([["feed", Home, "Home"], ["calendar", CalendarDays, "Calendar"], ["mymap", Sparkles, "My interests"], ["insights", Lightbulb, "Insights"]] as const).map(([t, I, label]) => {
-              const on = tab === t || (t === "feed" && (tab === "all" || tab === "map"));
+            {([["feed", Home, "Home"], ["calendar", CalendarDays, "Calendar"], ["feedback", Smile, "Reflection"], ["insights", Lightbulb, "Insights"]] as const).map(([t, I, label]) => {
+              const on = tab === t || (t === "feed" && (tab === "all" || tab === "map")) || (t === "feedback" && tab === "journal");
               return (
                 <Button key={t} variant="ghost" aria-label={tx(label)} title={tx(label)} aria-current={on ? "page" : undefined} onClick={() => ctx.setTab(t)} className={`flex h-12 flex-1 items-center justify-center rounded-full transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
                   <I className="size-5" />
@@ -424,8 +445,9 @@ function CalendarScreen({ ctx }: { ctx: Ctx }) {
 
 const tasks = [{ id: "photo", label: "Take 3 pictures", icon: Camera }, { id: "voice", label: "Reflect in a voice note", icon: Mic }, { id: "talk", label: "Talk to a stranger", icon: MessageCircle }];
 
-function Quest() {
+function Quest({ reflect }: { reflect: (id: number) => void }) {
   const { t: tx, language } = useLanguage();
+  const personal = usePersonalData();
   const [idx, setIdx] = useState(0);
   const [accepted, setAccepted] = useState(false);
   const [chosen, setChosen] = useState<string[]>(["photo"]);
@@ -447,6 +469,8 @@ function Quest() {
             );
           })}
         </div>
+        {personal.user ? <><PhotoUpload eventId={e.id} origin="quest" /><div className="grid grid-cols-3 gap-2">{personal.data.media.filter(item => item.event_id === e.id && item.origin === "quest" && item.kind === "photo").map(item => <img key={item.id} src={item.url} alt={tx("Quest photo")} className="aspect-square w-full rounded-lg object-cover" />)}</div></> : <AccountPanel />}
+        <Button className="h-12 w-full" onClick={() => reflect(e.id)}><Smile className="size-4" />{tx("Reflect on this experience")}</Button>
         <div className="rounded-3xl bg-card p-4">
           <p className="mb-3 text-sm font-bold">{tx("After: how was it?")}</p>
           <div className="flex gap-2">
@@ -582,7 +606,7 @@ function Hints() {
     ["Bring a buddy", "Invite a friend or join others on the same quest — community forms here."],
     ["80 / 20 mix", "80% matches, 20% wildcards so the profile doesn't trap people in a bubble."],
     ["Weather-aware", "Swap outdoor ideas for indoor ones when it rains."],
-    ["Privacy & care", "Photos/voice on-device by default; link 116 123 support line in settings."],
+    ["Privacy & care", "Photos and voice notes are private to your account."],
   ];
   return (
     <section className="space-y-3 lg:pt-6">
