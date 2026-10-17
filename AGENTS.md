@@ -16,3 +16,4 @@
 - Weekly calendar positions use a pure time parser and a day-selected timeline under a seven-day strip to avoid nested and horizontal scrolling; never invent a start time or duration for activities without one.
 - Personal account state and private data share one root provider and one auth subscription; browser Data API access uses owner RLS and a private file bucket, keeping media outside the source bundle.
 - Reflections retain event metadata and media provenance; memories store original photo IDs and assemble existing photos without AI interpretation so sources remain inspectable.
+- Questionnaire completion presents the shared account panel before discovery; example Insights stays explicitly marked as sample data and keeps saved reflection sources separate so presentation never implies fabricated personal results.
