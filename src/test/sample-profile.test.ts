@@ -7,7 +7,7 @@ it("generates five distinct example events with ratings and reflection answers",
   expect(samples).toHaveLength(5);
   expect(new Set(samples.map(item => item.event_id)).size).toBe(5);
   expect(samples.map(item => item.rating)).toEqual([4, 4, 4, 4, 4]);
-  expect(samples[0].answers).toEqual({ "What stayed with you?": "The trees and evening light helped me slow down." });
+  expect(samples[0]?.answers).toEqual({ "What stayed with you?": "The trees and evening light helped me slow down." });
   expect(samples.every(item => item.id.startsWith("sample-profile-") && item.user_id === "sample-only")).toBe(true);
   expect(profileInterests([], samples).reduce((sum, group) => sum + group.events.length, 0)).toBe(5);
 });
