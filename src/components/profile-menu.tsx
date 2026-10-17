@@ -3,11 +3,14 @@ import { X, UserRound, Settings, UserPlus, ChevronRight, Sparkles } from "lucide
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/lib/language";
+import { ProfileInterests } from "@/components/profile-interests";
+import type { ReflectionRow, MediaRow } from "@/lib/personal-data";
 
 export type ProfileAnswer = { question: string; values: string[] };
-export function ProfileMenu({ close, settings, quest, interests, account, save, answers, name, setName }: {
+export function ProfileMenu({ close, settings, quest, account, save, answers, name, setName, reflections, media, loading, error }: {
   close: () => void; settings: () => void; quest: () => void;
   interests?: () => void; account?: React.ReactNode; save?: () => Promise<void>;
+  reflections?: ReflectionRow[]; media?: MediaRow[]; loading?: boolean; error?: boolean;
   answers: ProfileAnswer[]; name: string; setName: (name: string) => void;
 }) {
   const { t } = useLanguage();
@@ -23,7 +26,9 @@ export function ProfileMenu({ close, settings, quest, interests, account, save, 
   };
   return <div role="dialog" aria-modal="true" aria-label={t("Profile")} className="no-scrollbar absolute inset-0 z-30 overflow-y-auto bg-background px-6 pb-10 pt-12">
     <div className="mb-7 flex items-center justify-between"><h2 className="font-display text-3xl font-semibold">{t("Profile")}</h2><Button variant="ghost" size="icon" aria-label={t("Close profile")} onClick={close}><X /></Button></div>
-    <UserRound className="mb-6 size-12 text-primary" />
+    <div className="mb-5 flex items-center gap-3"><UserRound className="size-10 text-primary" /><span className="font-display text-xl font-semibold">{name || t("You")}</span></div>
+    {loading ? <p role="status" className="mb-6 text-sm text-muted-foreground">{t("Loading…")}</p> : error ? <p role="alert" className="mb-6 text-sm text-destructive">{t("Could not load your activities")}</p> : <div className="mb-7"><ProfileInterests answers={answers} reflections={reflections ?? []} media={media ?? []} /></div>}
+    <h3 className="mb-4 border-t pt-6 font-display text-xl font-semibold">{t("Profile details")}</h3>
     <label htmlFor="profile-name" className="mb-2 block text-sm text-muted-foreground">{t("Name")}</label>
     <Input id="profile-name" value={name} onChange={(e) => setName(e.target.value)} placeholder={t("Not provided")} />
     {save && <Button className="mt-3" onClick={async () => { try { await save(); setSaveState("Profile saved"); } catch (error) { setSaveState((error as Error).message); } }}>{t("Save profile")}</Button>}
@@ -32,7 +37,6 @@ export function ProfileMenu({ close, settings, quest, interests, account, save, 
       <Button variant="ghost" onClick={settings} className="h-14 w-full justify-start rounded-none px-0"><Settings />{t("Account settings")}<ChevronRight className="ml-auto" /></Button>
       <Button variant="ghost" onClick={share} className="h-14 w-full justify-start rounded-none px-0"><UserPlus />{t("Invite a friend")}<ChevronRight className="ml-auto" /></Button>
       <Button variant="ghost" onClick={quest} className="h-14 w-full justify-start rounded-none px-0"><Sparkles />{t("Quest")}<ChevronRight className="ml-auto" /></Button>
-      {interests && <Button variant="ghost" onClick={interests} className="h-14 w-full justify-start rounded-none px-0"><Sparkles />{t("My interests")}<ChevronRight className="ml-auto" /></Button>}
     </div>
     {copied && <p role="status" className="mb-5 text-sm text-primary">{t("Invitation copied")}</p>}
     {invite && <Input aria-label={t("Copy invitation")} readOnly value={invite} onFocus={(e) => e.target.select()} />}

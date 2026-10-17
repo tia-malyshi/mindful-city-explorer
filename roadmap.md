@@ -16,3 +16,4 @@
 - [x] Make the bottom Reflection button and its feedback/memories choices visibly accessible.
 - [x] Add a create-account choice immediately after the questionnaire; verify signup form and optional discovery access.
 - [x] Restore the clearer weekly Insights presentation with original-information access; verify bottom-menu access and source toggle.
+- [x] Show the interest circle, connected interest branches and reviewed activity history directly in Profile; verify the profile flow.
