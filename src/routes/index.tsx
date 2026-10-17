@@ -113,11 +113,13 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
 
 function Onboarding({ done }: { done: () => void }) {
   const [step, setStep] = useState(-1);
-  const [picked, setPicked] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<Record<number, string[]>>({});
   const steps = [
-    { q: "What do you want more of?", opts: ["Calm", "Movement", "New people", "Culture", "Nature", "Confidence"] },
-    { q: "Who's coming with you?", opts: ["Just me", "Partner", "Friends", "Kids — family events"] },
-    { q: "How far are you up for?", opts: ["My neighbourhood", "Up to 30 min", "All of Warsaw"] },
+    { q: "What interests you?", hint: "Choose as many as you like.", multiple: true, opts: ["Nature & walks", "Sports & fitness", "Art & museums", "Music & concerts", "Food & cafés", "Books & writing", "Board games", "Photography", "Dance", "Crafts & workshops", "Mindfulness", "Volunteering", "History & architecture", "Science & technology"] },
+    { q: "What are your goals?", hint: "Pick everything you’d like to try.", multiple: true, opts: ["Explore new activities", "Do quests", "Meet new people", "Discover hidden places", "Build confidence", "Be more active", "Relax & recharge", "Learn something new"] },
+    { q: "Who's coming with you?", hint: "Choose all that fit your plans.", multiple: true, opts: ["Just me", "Partner", "Friends", "Kids — family events"] },
+    { q: "What age gap feels comfortable?", hint: "When meeting new people, which age difference would you prefer? Choose one, or skip.", multiple: false, opts: ["Within 5 years of my age", "Within 10 years of my age", "Any age gap", "Prefer not to say"] },
+    { q: "How far are you up for?", hint: "Choose one travel preference.", multiple: false, opts: ["My neighbourhood", "Up to 30 min", "All of Warsaw"] },
   ];
   if (step < 0)
     return (
@@ -137,18 +139,31 @@ function Onboarding({ done }: { done: () => void }) {
       </div>
     );
   const s = steps[step]!;
-  const tog = (o: string) => setPicked((p) => (p.includes(o) ? p.filter((x) => x !== o) : [...p, o]));
+  const picked = answers[step] ?? [];
+  const tog = (option: string) => setAnswers((previous) => {
+    const selected = previous[step] ?? [];
+    return { ...previous, [step]: selected.includes(option) ? selected.filter((value) => value !== option) : s.multiple ? [...selected, option] : [option] };
+  });
   return (
-    <div className="flex h-full flex-col px-6 pb-10 pt-14">
-      <div className="mb-10 flex gap-1.5">{steps.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} />)}</div>
-      <p className="text-sm text-muted-foreground">Question {step + 1} / {steps.length}</p>
-      <h2 className="mb-8 font-display text-4xl font-black leading-tight">{s.q}</h2>
-      <div className="flex flex-wrap gap-2">
-        {s.opts.map((o) => <button key={o} onClick={() => tog(o)} className={`rounded-full border px-4 py-2.5 text-sm font-medium ${picked.includes(o) ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`}>{o}</button>)}
+    <div className="flex min-h-full flex-col gap-6 px-6 pb-10 pt-10">
+      <div aria-hidden="true" className="flex gap-1.5">{steps.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} />)}</div>
+      <div className="flex items-center justify-between">
+        <button onClick={() => setStep(step - 1)} className="flex min-h-11 items-center gap-1 text-sm font-medium"><ChevronLeft className="size-4" aria-hidden="true" />Back</button>
+        <p aria-live="polite" className="text-sm text-muted-foreground">Question {step + 1} / {steps.length}</p>
       </div>
-      <button onClick={() => (step < steps.length - 1 ? setStep(step + 1) : done())} className="mt-auto rounded-full bg-primary py-4 font-bold text-primary-foreground">
-        {step < steps.length - 1 ? "Continue" : "Show my ideas"}
-      </button>
+      <div>
+        <h2 id="onboarding-question" className="font-display text-4xl font-black leading-tight">{s.q}</h2>
+        <p id="onboarding-hint" className="mt-3 text-sm text-muted-foreground">{s.hint}</p>
+      </div>
+      <div role="group" aria-labelledby="onboarding-question" aria-describedby="onboarding-hint" className="flex flex-wrap gap-2">
+        {s.opts.map((o) => <button key={o} aria-pressed={picked.includes(o)} onClick={() => tog(o)} className={`min-h-11 rounded-full border px-4 py-2.5 text-sm font-medium ${picked.includes(o) ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`}>{o}</button>)}
+      </div>
+      <div className="mt-auto flex flex-col gap-2 pt-2">
+        <button onClick={() => (step < steps.length - 1 ? setStep(step + 1) : done())} className="rounded-full bg-primary py-4 font-bold text-primary-foreground">
+          {step < steps.length - 1 ? "Continue" : "Show my ideas"}
+        </button>
+        {step === 3 && <button onClick={() => { setAnswers((previous) => ({ ...previous, [step]: [] })); setStep(step + 1); }} className="min-h-11 text-sm text-muted-foreground">Skip this question</button>}
+      </div>
     </div>
   );
 }
