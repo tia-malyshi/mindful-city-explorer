@@ -11,6 +11,6 @@ it("starts the post-question account panel in signup mode and permits switching 
   render(<LanguageProvider><AccountPanel initialMode="signup" /></LanguageProvider>);
   expect(screen.getByRole("heading", { name: "Create account" })).toBeTruthy();
   expect(screen.getByLabelText("Password").getAttribute("autocomplete")).toBe("new-password");
-  fireEvent.click(screen.getByRole("button", { name: "Sign in", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
   expect(screen.getByLabelText("Password").getAttribute("autocomplete")).toBe("current-password");
 });
