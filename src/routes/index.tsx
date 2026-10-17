@@ -132,9 +132,9 @@ function Onboarding({ done }: { done: () => void }) {
   ];
   if (step < 0)
     return (
-      <div className="flex h-full min-h-0 flex-col bg-background">
+      <div className="flex h-full min-h-0 flex-col bg-[rgb(25,59,42)]">
         <div className="relative min-h-0 flex-1 overflow-hidden">
-          <img src={warsawArt} alt="Illustration of Warsaw: Palace of Culture, Syrenka and the Vistula" width={768} height={1536} className="absolute inset-0 h-full w-full object-cover object-center" />
+          <img src={warsawArt} alt="Illustration of Warsaw: Palace of Culture, Syrenka and the Vistula" width={768} height={1536} className="absolute inset-0 h-full w-full object-contain object-bottom" />
           <p className="absolute left-6 top-12 text-sm font-medium tracking-wide text-foreground/80">Cześć 👋</p>
         </div>
         <div className="shrink-0 space-y-6 px-6 pb-10 pt-2">
