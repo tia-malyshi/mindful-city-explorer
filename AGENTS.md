@@ -19,4 +19,4 @@
 - Questionnaire completion presents the shared account panel before discovery; example Insights stays explicitly marked as sample data and keeps saved reflection sources separate so presentation never implies fabricated personal results.
 - Profile opens a focused interest overview derived from questionnaire choices and saved reflections; its connected branches and activity history expose original sources rather than fabricated personal events.
 - Keep generated profile-preview fixtures in a browser-safe module and behind an explicit sample/personal selector; never persist or merge sample rows into account data, so demonstrations cannot masquerade as personal history.
-- Render the radial interest diagram in a focused component with fixed circle positions and expandable source branches, so long activity names stay readable without crowding the map.
+- Render the compact interest diagram in a focused component with proportional node positions and expandable source details, so the map fits phones and long activity names remain inspectable.
