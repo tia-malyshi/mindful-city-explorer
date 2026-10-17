@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   Home, Map as MapIcon, CalendarDays, Sparkles, Smile, Check, X, Camera, Mic, MessageCircle,
   MapPin, Clock, ThumbsUp, ThumbsDown, Play, Plus, Minus, Search, SlidersHorizontal, ChevronLeft,
-  ChevronRight, ChevronsRight, List, Grid3x3, Lightbulb, RefreshCw,
+  ChevronRight, ChevronsRight, List, Grid3x3, Trees, Music, Dumbbell, Users, Waves, Lightbulb, RefreshCw,
 } from "lucide-react";
 import park from "@/assets/park.jpg";
 import oldtown from "@/assets/oldtown.jpg";
@@ -54,7 +54,7 @@ function Index() {
   const toggle = (id: number) => setPlanned((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   const ctx = { filters, setFilters, planned, toggle, setTab };
 
-  const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "1 · Warszawa"], ["all", "All events + filters"], ["calendar", "2 · Calendar"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["mymap", "6 · My map"], ["journal", "Monthly story"], ["insights", "Insights"]];
+  const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "1 · Warszawa"], ["all", "All events + filters"], ["calendar", "2 · Calendar"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["mymap", "6 · My interests"], ["journal", "Monthly story"], ["insights", "Insights"]];
 
   return (
     <main className="min-h-screen px-6 py-10 lg:py-14">
@@ -387,20 +387,60 @@ function Feedback() {
   );
 }
 
+const interests = [
+  { n: "Nature", v: 30, c: "stroke-sage", bg: "bg-sage", I: Trees },
+  { n: "Culture", v: 22, c: "stroke-rose", bg: "bg-rose", I: Music },
+  { n: "Sport", v: 18, c: "stroke-sky", bg: "bg-sky", I: Dumbbell },
+  { n: "Social", v: 14, c: "stroke-sun", bg: "bg-sun", I: Users },
+  { n: "Water", v: 9, c: "stroke-accent", bg: "bg-accent", I: Waves },
+  { n: "Learning", v: 7, c: "stroke-violet", bg: "bg-violet", I: Lightbulb },
+];
+
 function MyMap() {
-  const spots = [
-    { n: "Mokotów", x: 40, y: 66, r: 22, c: "bg-sage" }, { n: "Śródmieście", x: 52, y: 42, r: 18, c: "bg-rose" },
-    { n: "Praga", x: 78, y: 36, r: 12, c: "bg-sky" }, { n: "Wola", x: 24, y: 36, r: 10, c: "bg-sun" }, { n: "Żoliborz", x: 44, y: 14, r: 8, c: "bg-violet" },
-  ];
+  const [sel, setSel] = useState<string | null>(null);
+  const total = interests.reduce((t, i) => t + i.v, 0);
+  const R = 120, C = 150, gap = 7; // degrees gap
+  let ang = -90;
+  const pt = (deg: number, r = R) => [C + r * Math.cos((deg * Math.PI) / 180), C + r * Math.sin((deg * Math.PI) / 180)] as const;
+  const segs = interests.map((it) => {
+    const span = (it.v / total) * 360 - gap;
+    const s0 = ang + gap / 2, s1 = s0 + span;
+    ang += (it.v / total) * 360;
+    const [x0, y0] = pt(s0), [x1, y1] = pt(s1);
+    const mid = pt((s0 + s1) / 2);
+    return { ...it, d: `M ${x0} ${y0} A ${R} ${R} 0 ${span > 180 ? 1 : 0} 1 ${x1} ${y1}`, mid };
+  });
+  const active = interests.find((i) => i.n === sel);
   return (
-    <div className="space-y-4 pt-2">
-      <h2 className="font-display text-4xl font-black">My map</h2>
-      <p className="text-sm text-muted-foreground">Bigger bubble = more memories there.</p>
-      <div className="relative h-96 overflow-hidden rounded-3xl bg-card">
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full"><path d="M62 0 C 56 20, 70 35, 63 50 S 72 80, 67 100" className="fill-none stroke-sky/40" strokeWidth="5" /></svg>
-        {spots.map((s) => <button key={s.n} style={{ left: `${s.x}%`, top: `${s.y}%`, width: s.r * 4, height: s.r * 4 }} className={`absolute flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-[10px] font-bold text-ink ${s.c}`}>{s.n}</button>)}
+    <div className="space-y-5 pt-2">
+      <h2 className="font-display text-4xl font-black">My interests</h2>
+      <div className="relative mx-auto size-[300px]">
+        <svg viewBox="0 0 300 300" className="size-full">
+          {segs.map((s) => (
+            <path key={s.n} d={s.d} onClick={() => setSel(s.n === sel ? null : s.n)} className={`${s.c} cursor-pointer fill-none transition-opacity ${sel && sel !== s.n ? "opacity-30" : ""}`} strokeWidth={sel === s.n ? 44 : 36} strokeLinecap="round" />
+          ))}
+        </svg>
+        {segs.map((s) => (
+          <span key={s.n} style={{ left: s.mid[0], top: s.mid[1] }} className="pointer-events-none absolute flex -translate-x-1/2 -translate-y-1/2 text-ink"><s.I className="size-5" /></span>
+        ))}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <p className="font-display text-6xl font-black">{active ? `${Math.round((active.v / total) * 100)}%` : "6"}</p>
+          <p className="text-xs text-muted-foreground">{active ? active.n : "interests discovered"}</p>
+        </div>
       </div>
-      <div className="grid grid-cols-3 gap-2 text-center text-xs">{[["12", "activities"], ["5", "districts"], ["31", "photos"]].map(([a, b]) => <div key={b} className="rounded-2xl bg-card p-3"><b className="block font-display text-2xl">{a}</b>{b}</div>)}</div>
+      <div className="flex justify-center gap-2">
+        <button className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">Find more like this</button>
+        <button className="rounded-full bg-muted px-4 py-2 text-sm">Try a wildcard</button>
+      </div>
+      <div className="space-y-3 rounded-3xl bg-card p-4">
+        {interests.map((i) => (
+          <button key={i.n} onClick={() => setSel(i.n === sel ? null : i.n)} className="flex w-full items-center gap-3 text-left">
+            <span className={`flex size-9 items-center justify-center rounded-full text-ink ${i.bg}`}><i.I className="size-4" /></span>
+            <div className="flex-1"><p className="text-sm font-bold">{i.n}</p><div className="mt-1 h-1.5 rounded-full bg-muted"><div className={`h-1.5 rounded-full ${i.bg}`} style={{ width: `${(i.v / 30) * 100}%` }} /></div></div>
+            <b className="font-display">{Math.round((i.v / total) * 100)}%</b>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
