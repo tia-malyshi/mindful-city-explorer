@@ -54,7 +54,7 @@ function Index() {
   const toggle = (id: number) => setPlanned((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   const ctx = { filters, setFilters, planned, toggle, setTab };
 
-  const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "1 · Warszawa"], ["all", "All events + filters"], ["calendar", "2 · Calendar"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["mymap", "6 · My interests"], ["journal", "Monthly story"], ["insights", "Insights"]];
+  const labels: [Tab, string][] = [["onboard", "Onboarding"], ["feed", "1 · Warszawa"], ["all", "All events + filters"], ["calendar", "2 · Calendar"], ["quest", "3–4 · Quest"], ["feedback", "5 · Feedback"], ["insights", "6 · Insights + interests"], ["journal", "Monthly story"]];
 
   return (
     <main className="min-h-screen px-6 py-10 lg:py-14">
@@ -91,14 +91,14 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
           {tab === "calendar" && <CalendarScreen ctx={ctx} />}
           {tab === "quest" && <Quest />}
           {tab === "feedback" && <Feedback />}
-          {tab === "mymap" && <MyMap />}
+          {tab === "mymap" && <Insights />}
           {tab === "journal" && <Journal />}
           {tab === "insights" && <Insights />}
         </div>
         {!full && (
           <div className="absolute inset-x-4 bottom-5 flex justify-between rounded-full border bg-card/90 p-1.5 backdrop-blur">
-            {([["feed", Home], ["calendar", CalendarDays], ["quest", Sparkles], ["feedback", Smile], ["mymap", MapIcon], ["insights", Lightbulb]] as const).map(([t, I]) => {
-              const on = tab === t || (t === "feed" && tab === "all");
+            {([["feed", Home], ["calendar", CalendarDays], ["quest", Sparkles], ["insights", Lightbulb]] as const).map(([t, I]) => {
+              const on = tab === t || (t === "feed" && tab === "all") || (t === "quest" && tab === "feedback") || (t === "insights" && tab === "mymap");
               return (
                 <button key={t} onClick={() => ctx.setTab(t)} className={`flex h-12 flex-1 items-center justify-center rounded-full transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
                   <I className="size-5" />
@@ -413,7 +413,8 @@ function MyMap() {
   const active = interests.find((i) => i.n === sel);
   return (
     <div className="space-y-5 pt-2">
-      <h2 className="font-display text-4xl font-black">My interests</h2>
+      <h2 className="font-display text-4xl font-black">Insights</h2>
+      <p className="text-xs uppercase tracking-wider text-muted-foreground">Your interest map</p>
       <div className="relative mx-auto size-[300px]">
         <svg viewBox="0 0 300 300" className="size-full">
           {segs.map((s) => (
@@ -493,7 +494,8 @@ function Insights() {
   const max = Math.max(...wk.d.map(([, n]) => n));
   return (
     <div className="space-y-4 pt-2">
-      <h2 className="font-display text-4xl font-black">Insights</h2>
+      <MyMap />
+      <p className="pt-4 text-xs uppercase tracking-wider text-muted-foreground">Weekly review</p>
       <p className="text-sm text-muted-foreground">Your weekly review: where you went and what to try next, built from your visits, ratings and notes.</p>
       <div className="flex gap-2 rounded-2xl border border-primary/30 bg-primary/10 p-3 text-xs">
         <Sparkles className="size-4 shrink-0 text-primary" />
