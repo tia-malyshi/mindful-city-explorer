@@ -134,13 +134,13 @@ function Onboarding({ done }: { done: () => void }) {
     return (
       <div className="flex h-full min-h-0 flex-col bg-[rgb(25,59,42)]">
         <div className="relative min-h-0 flex-1 overflow-hidden">
-          <img src={warsawArt} alt="Illustration of Warsaw: Palace of Culture, Syrenka and the Vistula" width={768} height={1536} className="absolute inset-0 h-full w-full object-contain object-bottom" />
+          <img src={warsawArt} alt="Illustration of Warsaw: Palace of Culture, Syrenka and the Vistula" width={768} height={1536} className="absolute inset-0 h-full w-full object-cover object-bottom" />
           <p className="absolute left-6 top-12 text-sm font-medium tracking-wide text-foreground/80">Cześć 👋</p>
         </div>
-        <div className="shrink-0 space-y-6 px-6 pb-10 pt-2">
+        <div className="shrink-0 space-y-5 px-6 pb-8 pt-4">
           <div className="space-y-1">
-            <p className="text-lg text-foreground/90">Zwolnij i</p>
-            <h2 className="font-display text-[clamp(2.25rem,11vw,3rem)] font-black leading-[0.95] text-balance">odkryj swoją Warszawę</h2>
+            <p className="text-base text-foreground/80">Zwolnij i</p>
+            <h2 className="font-display text-[clamp(1.6rem,7vw,2rem)] font-extrabold leading-tight text-balance">odkryj swoją Warszawę</h2>
           </div>
           <button onClick={() => setStep(0)} className="flex w-full items-center gap-3 rounded-full bg-card p-2">
             <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"><ChevronsRight className="size-5" /></span>
