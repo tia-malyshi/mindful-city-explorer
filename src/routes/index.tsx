@@ -133,12 +133,12 @@ function Onboarding({ done }: { done: () => void }) {
   if (step < 0)
     return (
       <div className="flex h-full min-h-0 flex-col bg-[rgb(25,59,42)]">
-        <div className="relative min-h-0 flex-1 overflow-hidden">
-          <img src={warsawArt} alt="Illustration of Warsaw: Palace of Culture, Syrenka and the Vistula" className="absolute inset-0 h-full w-full object-cover object-center" />
-          <div className="absolute inset-x-0 bottom-0 h-[35%] bg-gradient-to-b from-transparent via-[rgb(25,59,42)]/50 via-50% to-[rgb(25,59,42)] to-85%" />
+        <div className="relative -mb-10 min-h-0 flex-1 overflow-hidden">
+          <img src={warsawArt} alt="Illustration of Warsaw: Palace of Culture, Syrenka and the Vistula" className="absolute inset-0 h-full w-full object-cover object-bottom [mask-image:linear-gradient(to_bottom,black_82%,transparent_98%)]" />
+          
           <p className="absolute left-6 top-12 text-3xl font-bold text-foreground">Cześć 👋</p>
         </div>
-        <div className="shrink-0 space-y-5 px-6 pb-8 pt-4">
+        <div className="relative shrink-0 space-y-5 px-6 pb-8 pt-4">
           <div className="space-y-1">
             <p className="text-base text-foreground/80">Zwolnij i</p>
             <h2 className="font-display text-[clamp(1.6rem,7vw,2rem)] font-extrabold leading-tight text-balance">odkryj swoją Warszawę</h2>
