@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import "@lovable.dev/cloud-auth-js/styles.css";
 
-export function AccountPanel() {
+export function AccountPanel({ initialMode = "login", profileAnswers = [] }: { initialMode?: "login" | "signup"; profileAnswers?: { question: string; values: string[] }[] }) {
   const { t } = useLanguage();
   const { user, signOut } = usePersonalData();
-  const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "reset">(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -22,7 +22,7 @@ export function AccountPanel() {
     <h3 className="font-display text-xl font-semibold">{t(mode === "signup" ? "Create account" : mode === "reset" ? "Reset password" : "Sign in to save your memories")}</h3>
     <form className="space-y-3" onSubmit={e => { e.preventDefault(); void run(async () => {
       if (mode === "reset") { const result = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` }); if (result.error) throw result.error; setNotice("Check your email for a reset link"); return; }
-      const result = mode === "signup" ? await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } }) : await supabase.auth.signInWithPassword({ email, password });
+      const result = mode === "signup" ? await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin, data: { answers: profileAnswers } } }) : await supabase.auth.signInWithPassword({ email, password });
       if (result.error) throw result.error;
       if (mode === "signup" && !result.data.session) setNotice("Check your email to confirm your account");
     }); }}>

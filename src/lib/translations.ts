@@ -1,4 +1,8 @@
 export const translations: Record<string, { pl: string; ru: string }> = {
+  "Your Warsaw is waiting": { pl: "Twoja Warszawa czeka", ru: "Ваша Варшава ждёт" },
+  "Continue without an account": { pl: "Kontynuuj bez konta", ru: "Продолжить без аккаунта" },
+  "Example weekly review": { pl: "Przykładowe podsumowanie tygodnia", ru: "Пример обзора недели" },
+  "This overview uses example data. Your saved reflections are below.": { pl: "Podsumowanie zawiera przykładowe dane. Twoje zapisane refleksje znajdziesz poniżej.", ru: "Обзор содержит примерные данные. Ваши сохранённые рефлексии ниже." },
   "Calendar": { pl: "Kalendarz", ru: "Календарь" },
   "Reflection": { pl: "Refleksja", ru: "Рефлексия" },
   "Experience": { pl: "Ocena", ru: "Отзыв" },

@@ -9,6 +9,7 @@ import { usePersonalData } from "@/lib/personal-data";
 import { AccountPanel } from "@/components/account-panel";
 import { ReflectionScreen } from "@/components/reflection-screen";
 import { PersonalInsights } from "@/components/personal-insights";
+import { ReflectionSource } from "@/components/memories-screen";
 import { PhotoUpload } from "@/components/photo-upload";
 import {
   UserRound, Settings, Home, Map as MapIcon, CalendarDays, Sparkles, Smile, Check, X, Camera, Mic, MessageCircle,
@@ -129,7 +130,7 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
           {tab === "feedback" && <ReflectionScreen key="reflection" events={events} eventId={ctx.reflectionEvent} setEventId={ctx.setReflectionEvent} />}
           {tab === "mymap" && <MyMap />}
           {tab === "journal" && <ReflectionScreen key="memories" events={events} eventId={ctx.reflectionEvent} setEventId={ctx.setReflectionEvent} initialMemories />}
-          {tab === "insights" && <PersonalInsights />}
+          {tab === "insights" && <Insights />}
         </div>
         {!full && (
           <div className="absolute inset-x-4 bottom-5 flex justify-between rounded-full border bg-card/90 p-1.5 backdrop-blur">
@@ -151,6 +152,9 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
 
 function Onboarding({ done }: { done: (answers: ProfileAnswer[]) => void }) {
   const { t: tx, language } = useLanguage();
+  const personal = usePersonalData();
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [step, setStep] = useState(-1);
   const [picked, setPicked] = useState<string[]>([]);
   const [answers, setAnswers] = useState<ProfileAnswer[]>([]);
@@ -167,6 +171,13 @@ function Onboarding({ done }: { done: (answers: ProfileAnswer[]) => void }) {
     { q: "How far are you up for?", hint: "By foot, bike or public transport.", opts: ["My neighbourhood", "Up to 30 min", "All of Warsaw"] },
     { q: "Anything we should know?", hint: "Optional — helps pick fitting places.", opts: ["Step-free access", "Quiet places", "Polish not needed", "No alcohol", "None"] },
   ];
+  if (step === steps.length) return <div className="no-scrollbar flex h-full flex-col gap-6 overflow-y-auto px-6 pb-10 pt-16">
+    <h2 className="font-display text-3xl font-semibold">{tx("Your Warsaw is waiting")}</h2>
+    {accountOpen ? <AccountPanel initialMode="signup" profileAnswers={answers} /> : !personal.user && <Button className="h-14 w-full rounded-full" onClick={() => setAccountOpen(true)}><UserRound className="size-5" />{tx("Create account")}</Button>}
+    <Button variant={personal.user ? "default" : "outline"} className="h-12 w-full rounded-full" onClick={async () => { try { if (personal.user) await personal.saveProfile(personal.data.profile?.display_name ?? "", answers); done(answers); } catch (error) { setSaveError((error as Error).message); } }}>{tx(personal.user ? "Show my ideas" : "Continue without an account")}</Button>
+    {saveError && <p role="alert" className="text-sm text-destructive">{tx(saveError)}</p>}
+    <Button variant="ghost" onClick={() => { setStep(steps.length - 1); setPicked(answers.at(-1)?.values ?? []); }}>{tx("‹ Back")}</Button>
+  </div>;
   if (step === -2) return <LanguageChoice next={() => setStep(0)} back={() => setStep(-1)} />;
   if (step === -1)
     return (
@@ -198,8 +209,8 @@ function Onboarding({ done }: { done: (answers: ProfileAnswer[]) => void }) {
       <div className="-mx-1 no-scrollbar flex flex-1 flex-wrap content-start gap-2 overflow-y-auto px-1 pb-4">
         {s.opts.map((o) => <button key={o} onClick={() => tog(o)} className={`rounded-full border px-4 py-2.5 text-sm font-medium ${picked.includes(o) ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`}>{tx(o)}</button>)}
       </div>
-      <button onClick={() => { const updated = [...answers]; updated[step] = { question: s.q, values: picked }; setAnswers(updated); if (step < steps.length - 1) { setStep(step + 1); setPicked(updated[step + 1]?.values ?? []); } else done(updated); }} className="mt-4 rounded-full bg-primary py-4 font-bold text-primary-foreground">
-        {step < steps.length - 1 ? tx("Continue") : tx("Show my ideas")}
+      <button onClick={() => { const updated = [...answers]; updated[step] = { question: s.q, values: picked }; setAnswers(updated); setStep(step + 1); setPicked(updated[step + 1]?.values ?? []); }} className="mt-4 rounded-full bg-primary py-4 font-bold text-primary-foreground">
+        {tx("Continue")}
       </button>
     </div>
   );
@@ -623,6 +634,8 @@ const weeks = [
 
 function Insights() {
   const { t: tx, language } = useLanguage();
+  const personal = usePersonalData();
+  const [sources, setSources] = useState(false);
   const [w, setW] = useState(0);
   const wk = weeks[w];
   if (!wk) return null;
@@ -630,6 +643,7 @@ function Insights() {
   return (
     <div className="space-y-4 pt-2">
       <h2 className="font-display text-4xl font-black">{tx("Insights")}</h2>
+      <span className="text-xs text-muted-foreground">{tx("Example weekly review")}</span>
       <p className="pt-4 text-xs uppercase tracking-wider text-muted-foreground">{tx("Weekly review")}</p>
       <p className="text-sm text-muted-foreground">{tx("Your weekly review: where you went and what to try next, built from your visits, ratings and notes.")}</p>
       <div className="flex gap-2 rounded-2xl border border-primary/30 bg-primary/10 p-3 text-xs">
@@ -644,7 +658,8 @@ function Insights() {
       <div className="grid grid-cols-4 gap-2 text-center">
         {wk.stats.map(([a, b]) => <div key={b} className="rounded-2xl bg-card p-2.5"><b className="block font-display text-xl">{tx(a)}</b><span className="break-words text-[9px] uppercase text-muted-foreground">{tx(b)}</span></div>)}
       </div>
-      <div className="flex items-center justify-between text-xs text-muted-foreground"><span>{tx("Built from ")}{wk.stats[0]?.[0]} {tx(" visits")}</span><button className="flex items-center gap-1 font-bold text-primary"><RefreshCw className="size-3" />{tx("Refresh")}</button></div>
+      <Button variant="ghost" className="h-auto w-full justify-between px-0 text-xs" aria-expanded={sources} onClick={() => setSources(!sources)}>{tx("See original information")}<ChevronRight className={`size-4 ${sources ? "rotate-90" : ""}`} /></Button>
+      {sources && <div className="space-y-3 border-y py-4"><p className="text-xs text-muted-foreground">{tx("This overview uses example data. Your saved reflections are below.")}</p>{personal.data.reflections.map(item => <ReflectionSource key={item.id} reflection={item} />)}{!personal.data.reflections.length && <p className="text-sm text-muted-foreground">{tx("No saved experiences yet")}</p>}</div>}
       <div className="space-y-3 rounded-3xl bg-card p-4">
         <div className="flex items-center gap-2"><span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground"><MapPin className="size-4" /></span><h3 className="font-display text-lg font-black">{tx("Where you went")}</h3></div>
         {wk.d.map(([n, c]) => (
