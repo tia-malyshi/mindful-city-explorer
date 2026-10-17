@@ -72,8 +72,8 @@ function Index() {
     if (!personal.user) { setName(""); setAnswers([]); return; }
     const profile = personal.data.profile;
     if (!profile) return;
-    setName(profile.display_name);
-    if (Array.isArray(profile.answers)) setAnswers(profile.answers.flatMap(answer => {
+    if (profile.display_name) setName(profile.display_name);
+    if (Array.isArray(profile.answers) && profile.answers.length) setAnswers(profile.answers.flatMap(answer => {
       if (!answer || typeof answer !== "object" || Array.isArray(answer) || typeof answer['question'] !== "string" || !Array.isArray(answer['values'])) return [];
       return [{ question: answer['question'], values: answer['values'].filter((value): value is string => typeof value === "string") }];
     }));
@@ -126,9 +126,9 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
           {tab === "map" && <WarsawMap ctx={ctx} />}
           {tab === "calendar" && <CalendarScreen ctx={ctx} />}
           {tab === "quest" && <Quest reflect={(id) => { ctx.setReflectionEvent(id); ctx.setTab("feedback"); }} />}
-          {tab === "feedback" && <ReflectionScreen events={events} eventId={ctx.reflectionEvent} setEventId={ctx.setReflectionEvent} />}
+          {tab === "feedback" && <ReflectionScreen key="reflection" events={events} eventId={ctx.reflectionEvent} setEventId={ctx.setReflectionEvent} />}
           {tab === "mymap" && <MyMap />}
-          {tab === "journal" && <ReflectionScreen events={events} eventId={ctx.reflectionEvent} setEventId={ctx.setReflectionEvent} initialMemories />}
+          {tab === "journal" && <ReflectionScreen key="memories" events={events} eventId={ctx.reflectionEvent} setEventId={ctx.setReflectionEvent} initialMemories />}
           {tab === "insights" && <PersonalInsights />}
         </div>
         {!full && (
@@ -136,8 +136,9 @@ function Phone({ tab, ctx }: { tab: Tab; ctx: Ctx }) {
             {([["feed", Home, "Home"], ["calendar", CalendarDays, "Calendar"], ["feedback", Smile, "Reflection"], ["insights", Lightbulb, "Insights"]] as const).map(([t, I, label]) => {
               const on = tab === t || (t === "feed" && (tab === "all" || tab === "map")) || (t === "feedback" && tab === "journal");
               return (
-                <Button key={t} variant="ghost" aria-label={tx(label)} title={tx(label)} aria-current={on ? "page" : undefined} onClick={() => ctx.setTab(t)} className={`flex h-12 flex-1 items-center justify-center rounded-full transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
+                <Button key={t} variant="ghost" aria-label={tx(label)} title={tx(label)} aria-current={on ? "page" : undefined} onClick={() => ctx.setTab(t)} className={`flex h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-full px-1 transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
                   <I className="size-5" />
+                  <span className="text-[9px] leading-tight">{tx(label)}</span>
                 </Button>
               );
             })}
