@@ -99,11 +99,13 @@ bun run test       # testy (vitest run)
 
 ## 👥 Team
 
-_(dodaj imiona i role członków zespołu)_
+- Aliaxandr Rakouski
+- Tetiana Malyshivska
+- Lizaveta Zabrotskaya
 
 ## 📄 License
 
-_(np. MIT)_
+[MIT](LICENSE)
 
 ---
 *Built at Warsaw Open Data hackathon.*
