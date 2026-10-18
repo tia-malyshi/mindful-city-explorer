@@ -98,7 +98,7 @@ bun run test       # testy (vitest run)
 ```
 
 ## 👥 Team
-
+Zespół nr 10. Spółka z ograniczoną odpowiedzialnością.
 - Aliaxandr Rakouski
 - Tetiana Malyshivska
 - Lizaveta Zabrotskaya
