@@ -20,7 +20,7 @@ import park from "@/assets/park.jpg";
 import oldtown from "@/assets/oldtown.jpg";
 import pool from "@/assets/pool.jpg";
 import river from "@/assets/river.jpg";
-import warsawPhoto from "@/assets/warsaw-welcome.webp.asset.json";
+import warsawPhoto from "@/assets/warsaw-illustration.jpg";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -32,8 +32,8 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Mental-health friendly city exploration app prototype built on Warsaw Open Data." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:image", content: warsawPhoto.url },
-      { name: "twitter:image", content: warsawPhoto.url },
+      { property: "og:image", content: warsawPhoto },
+      { name: "twitter:image", content: warsawPhoto },
     ],
   }),
   component: Index,
@@ -185,7 +185,7 @@ function Onboarding({ done }: { done: (answers: ProfileAnswer[]) => void }) {
     return (
       <div className="flex h-full min-h-0 flex-col bg-welcome text-foreground">
         <div className="relative min-h-0 flex-1 overflow-hidden">
-          <img src={warsawPhoto.url} alt={tx("Pałac Kultury i Nauki widziany z warszawskiej ulicy")} width={768} height={994} className="absolute inset-0 h-full w-full object-cover object-center" />
+          <img src={warsawPhoto} alt={tx("Pałac Kultury i Nauki widziany z warszawskiej ulicy")} width={768} height={994} className="absolute inset-0 h-full w-full object-cover object-center" />
           <div aria-hidden="true" className="welcome-photo-fade pointer-events-none absolute inset-x-0 bottom-0 h-48" />
         </div>
         <div className="shrink-0 px-7 pb-10 pt-7 text-center">

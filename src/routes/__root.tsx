@@ -14,7 +14,6 @@ import { LanguageProvider, useLanguage } from "@/lib/language";
 import { PersonalProvider } from "@/lib/personal-data";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
   const { t, language } = useLanguage();
@@ -42,7 +41,6 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (

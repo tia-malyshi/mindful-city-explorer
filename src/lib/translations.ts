@@ -70,7 +70,6 @@ export const translations: Record<string, { pl: string; ru: string }> = {
   "Check your email for a reset link": { pl: "Sprawdź e-mail z linkiem do resetowania", ru: "Проверьте письмо со ссылкой для сброса" },
   "Check your email to confirm your account": { pl: "Sprawdź e-mail, aby potwierdzić konto", ru: "Проверьте письмо для подтверждения аккаунта" },
   "Continue with Google": { pl: "Kontynuuj z Google", ru: "Продолжить с Google" },
-  "Continue with Lovable": { pl: "Kontynuuj z Lovable", ru: "Продолжить с Lovable" },
   "New password": { pl: "Nowe hasło", ru: "Новый пароль" },
   "Save password": { pl: "Zapisz hasło", ru: "Сохранить пароль" },
   "Password updated": { pl: "Hasło zaktualizowane", ru: "Пароль обновлён" },

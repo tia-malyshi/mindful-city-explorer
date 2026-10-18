@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useLanguage } from "@/lib/language";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { usePersonalData } from "@/lib/personal-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import "@lovable.dev/cloud-auth-js/styles.css";
 
 export function AccountPanel({ initialMode = "login", profileAnswers = [] }: { initialMode?: "login" | "signup"; profileAnswers?: { question: string; values: string[] }[] }) {
   const { t } = useLanguage();
@@ -31,8 +29,7 @@ export function AccountPanel({ initialMode = "login", profileAnswers = [] }: { i
       <Button type="submit" className="w-full" disabled={busy}>{t(busy ? "Saving…" : mode === "signup" ? "Create account" : mode === "reset" ? "Send reset link" : "Sign in")}</Button>
     </form>
     {mode !== "reset" && <div className="space-y-2">
-      <Button variant="outline" className="w-full" disabled={busy} onClick={() => run(async () => { const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin }); if (result.error) throw result.error; })}>{t("Continue with Google")}</Button>
-      <Button className="lovable-auth-button w-full" disabled={busy} onClick={() => run(async () => { const result = await lovable.auth.signInWithOAuth("lovable", { redirect_uri: window.location.origin }); if (result.error) throw result.error; })}>{t("Continue with Lovable")}</Button>
+      <Button variant="outline" className="w-full" disabled={busy} onClick={() => run(async () => { const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin } }); if (error) throw error; })}>{t("Continue with Google")}</Button>
     </div>}
     <div className="flex flex-wrap gap-2"><Button variant="ghost" size="sm" onClick={() => { setMode(mode === "signup" ? "login" : "signup"); setNotice(""); }}>{t(mode === "signup" ? "Sign in" : "Create account")}</Button><Button variant="ghost" size="sm" onClick={() => setMode(mode === "reset" ? "login" : "reset")}>{t(mode === "reset" ? "Sign in" : "Forgot password?")}</Button></div>
     {notice && <p role="status" className="text-sm text-primary">{t(notice)}</p>}{error && <p role="alert" className="text-sm text-destructive">{t(error)}</p>}
